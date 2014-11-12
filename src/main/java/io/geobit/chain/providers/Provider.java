@@ -23,9 +23,9 @@ public abstract class Provider<T> {
 	}
 	
 	public synchronized T takeDifferent(T other) {
-		T t = list.get(random.nextInt(total));
+		T t = take();
 		
-		if( perf.isBlacklisted(t) || other==t) {
+		if(other==t) {
 			return takeDifferent(other);
 		}
 		return t;

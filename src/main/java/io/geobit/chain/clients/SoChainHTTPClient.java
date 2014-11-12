@@ -5,9 +5,9 @@ import io.geobit.chain.entity.sochain.SoChainData;
 import io.geobit.chain.entity.sochain.SoChainResponse;
 import io.geobit.chain.entity.sochain.SoChainTransaction;
 import io.geobit.chain.providers.AddressTransactionsProvider;
-import io.geobit.chain.providers.BalanceProvider;
+import io.geobit.chain.providers.balance.BalanceProvider;
 import io.geobit.common.entity.AddressTransactions;
-import io.geobit.statics.StaticNumbers;
+import io.geobit.common.statics.StaticNumbers;
 
 import java.util.HashMap;
 import java.util.LinkedList;

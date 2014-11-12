@@ -1,14 +1,15 @@
 package io.geobit.chain.dispatchers;
 
-import static io.geobit.statics.Log.log;
-import io.geobit.chain.providers.BalanceProvider;
-import io.geobit.chain.providers.BalanceProviders;
-import io.geobit.chain.providers.ReceivedProvider;
-import io.geobit.chain.providers.ReceivedProviders;
-import io.geobit.chain.providers.runnable.BalanceRunnable;
-import io.geobit.chain.providers.runnable.FutureBalanceCallback;
-import io.geobit.chain.providers.runnable.FutureReceivedCallback;
-import io.geobit.chain.providers.runnable.ReceivedRunnable;
+import static io.geobit.common.statics.Log.log;
+import io.geobit.chain.providers.balance.BalanceCheckRunnable;
+import io.geobit.chain.providers.balance.BalanceProvider;
+import io.geobit.chain.providers.balance.BalanceProviders;
+import io.geobit.chain.providers.balance.BalanceRunnable;
+import io.geobit.chain.providers.balance.BalanceFutureCallback;
+import io.geobit.chain.providers.received.ReceivedFutureCallback;
+import io.geobit.chain.providers.received.ReceivedProvider;
+import io.geobit.chain.providers.received.ReceivedProviders;
+import io.geobit.chain.providers.received.ReceivedRunnable;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -27,7 +28,7 @@ import com.google.common.util.concurrent.SettableFuture;
 public class BalanceAndReceivedDispatchers 
 implements BalanceProvider, ReceivedProvider {
 
-	private ExecutorService              executor     = Executors.newFixedThreadPool(5);
+	private ExecutorService              executor     = Executors.newFixedThreadPool(10);
 	private ListeningExecutorService moreExecutor     = MoreExecutors.listeningDecorator(executor);
 
 	private BalanceProviders     balanceProviders     = new BalanceProviders();
@@ -49,7 +50,7 @@ implements BalanceProvider, ReceivedProvider {
 
 	private void initializeCache() {
 		cache = CacheBuilder.newBuilder()
-				.maximumSize(1000000)
+				.maximumSize(100000)
 				.recordStats()
 				.build(
 						new CacheLoader<String, Long>() {
@@ -97,13 +98,12 @@ implements BalanceProvider, ReceivedProvider {
 		ListenableFuture<Long> listenableFuture1 = moreExecutor.submit(runner1);
 		ListenableFuture<Long> listenableFuture2 = moreExecutor.submit(runner2);
 		SettableFuture<Long> returned = SettableFuture.create();
-		Futures.addCallback(listenableFuture1,new FutureBalanceCallback(start,  bal1, returned, balanceProviders ));
-		Futures.addCallback(listenableFuture2,new FutureBalanceCallback(start,  bal2, returned, balanceProviders ));
-		/* check balance runnable??? */
-		/* how to spot providers returning wrong values? */
-		Long valRet;
+		Futures.addCallback(listenableFuture1,new BalanceFutureCallback(start,  bal1, returned, balanceProviders ));
+		Futures.addCallback(listenableFuture2,new BalanceFutureCallback(start,  bal2, returned, balanceProviders ));
+		Runnable checker = new BalanceCheckRunnable(address,listenableFuture1, bal1, listenableFuture2, bal2, balanceProviders, cache); 
+		moreExecutor.execute(checker);
 		try {
-			valRet = returned.get();
+			Long valRet = returned.get();
 			if(valCache!=null && valCache.equals( valRet ) )
 				return valRet;
 			
@@ -113,9 +113,7 @@ implements BalanceProvider, ReceivedProvider {
 				cache.put("b/" + address, first);
 				return first;
 			}
-			if(first != null)	    cache.put("b/" + address, first);
-			else if(second!= null)	cache.put("b/" + address, second);	
-		} catch (InterruptedException | ExecutionException e) {		
+		} catch (Exception e) {		
 		}
 		return getBalance(address,cont+1);
 	}
@@ -135,13 +133,14 @@ implements BalanceProvider, ReceivedProvider {
 		Callable<Long> runner1 = new ReceivedRunnable(rec1, address);
 		Callable<Long> runner2 = new ReceivedRunnable(rec2, address);
 		final Long start=System.currentTimeMillis();
-		ListenableFuture<Long> listenableFuture1 = moreExecutor.submit(runner1);
+		ListenableFuture<Long> listenableFuture1 = moreExecutor.submit( runner1 );
 		ListenableFuture<Long> listenableFuture2 = moreExecutor.submit(runner2);
 		SettableFuture<Long> returned = SettableFuture.create();
-		Futures.addCallback(listenableFuture1,new FutureReceivedCallback(start,  rec1, returned, receivedProviders ));
-		Futures.addCallback(listenableFuture2,new FutureReceivedCallback(start,  rec2, returned, receivedProviders ));
+		Futures.addCallback(listenableFuture1,new ReceivedFutureCallback(start,  rec1, returned, receivedProviders ));
+		Futures.addCallback(listenableFuture2,new ReceivedFutureCallback(start,  rec2, returned, receivedProviders ));
 		/* check balance runnable??? */
 		/* how to spot providers returning wrong values? */
+		
 		Long valRet;
 		try {
 			valRet = returned.get();  /* return the faster */
@@ -157,7 +156,7 @@ implements BalanceProvider, ReceivedProvider {
 			if(first != null)	    cache.put("r/" + address, first);
 			else if(second!= null)	cache.put("r/" + address, second);
 			
-		} catch (InterruptedException | ExecutionException e) {
+		} catch (Exception e) {
 			
 		}
 		return getBalance(address,cont+1);
@@ -170,6 +169,12 @@ implements BalanceProvider, ReceivedProvider {
 		return ret;
 	}
 
+	public BalanceProviders getBalanceProviders() {
+		return balanceProviders;
+	}
 
+	public ReceivedProviders getReceivedProviders() {
+		return receivedProviders;
+	}
 
 }

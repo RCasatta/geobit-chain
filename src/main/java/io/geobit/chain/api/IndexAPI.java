@@ -12,23 +12,45 @@ public class IndexAPI {
 	@GET
 	@Produces({MediaType.TEXT_HTML}) 
 	public Response addressTransactions() {
-		String head="<html><body><ul>";
-		String link="<li><a href=\"btc/v1/%s\">%s</a></li>";
-		String foot="<html><body></ul>";
+		String head   = "<html><body>";
+		String title  = "<h1>Redundant blockchain data provider</h1>";
+		String sub1   = "<h2>Api methods</h2>";
+		String sub2   = "<h2>Links</h2>";
+		String link   = "<a href=\"btc/v1/%s\">%s</a>";
+		String linkli = "<li><a href=\"btc/v1/%s\">%s</a></li>";
+		String foot   = "</ul></html></body>";
 		
 		String myAddress = "1DiWBDy3eejMtUUPAvVLqWmPVsecbqbrSU";
+		String anotherAddress = "1dice8EMZmqKvrGE4Qc9bUFf9PX3xaYDp";
 		String txHash    = "ec0b571d8eafa5ccbb81a509e563b8142d045aece050909154b638758cc5d425";
 		
+		String balanceLinks = String.format(link, "balance/" +myAddress               , "balance") + ", " +
+				String.format(link, "balance/" +myAddress + ","  +anotherAddress      , "multi balance") + ", " +
+				String.format(link, "balance/" +myAddress + "?cache=true"             , "balance cache")
+				;
 		
-		String page= head +
-				String.format(link, "address-transactions/" + myAddress , "address-transactions") +
-				String.format(link, "balance/" +myAddress               , "balance")     +
-				String.format(link, "block/300000"                      , "block")   +
-				String.format(link, "cache-invalidate/" + myAddress     , "cache-invalidate")   +
-				String.format(link, "received/" + myAddress             , "received")   +
-				String.format(link, "transaction/" + txHash             , "transaction")     +
-				String.format(link, "transHex/"                         , "transHex")    +
-				foot;
+		String receivedLinks = String.format(link, "received/" +myAddress               , "received") + ", " +
+				String.format(link, "received/" +myAddress + ","  +anotherAddress      , "multi received") + ", " +
+				String.format(link, "received/" +myAddress + "?cache=true"             , "received cache")
+				;
+		
+		String apiMethods = "<ul>" + 
+				"<li>" + balanceLinks  + "</li>"    + 
+				"<li>" + receivedLinks + "</li>"    +
+				String.format(linkli, "address-transactions/" + myAddress , "address-transactions") +
+				String.format(linkli, "block/300000"                      , "block")   +
+				String.format(linkli, "cache-invalidate/" + myAddress     , "cache-invalidate")   +
+				String.format(linkli, "transaction/" + txHash             , "transaction")     +
+				String.format(linkli, "trans-hex/" + txHash               , "trans-hex") + 
+				"</ul>";
+		
+		String links = "<ul>" +
+				String.format(linkli, "stats"                             , "stats")    +
+				"<li><a href=\"https://github.com/RCasatta/geobit-chain\">github</a></li>" +
+				"</ul>";
+		
+		String page= head + title + sub1 + apiMethods + sub2 + links + foot;
+		
 		return Response.ok( page ).build();
 		
 	}

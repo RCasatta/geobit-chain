@@ -1,5 +1,7 @@
 package io.geobit.chain.api;
 
+import io.geobit.common.statics.StaticStrings;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -12,9 +14,9 @@ public class CacheInvalidateAPI {
 	
 	@GET
 	@Path("/{address}")
-	@Produces({MediaType.TEXT_PLAIN}) 
+	@Produces({MediaType.APPLICATION_JSON}) 
 	public Response cacheInvalidate(@PathParam("address") String address) {
-		return Response.ok().build();
+		return Response.ok(StaticStrings.UNDER_CONSTRUCTION_JSON).build();
 	}
 
 }

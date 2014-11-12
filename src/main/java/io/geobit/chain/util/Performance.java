@@ -1,6 +1,6 @@
 package io.geobit.chain.util;
 
-import io.geobit.statics.StaticNumbers;
+import io.geobit.common.statics.StaticNumbers;
 
 import java.util.HashMap;
 import java.util.Map;

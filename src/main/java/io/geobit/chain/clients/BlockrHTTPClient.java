@@ -1,19 +1,19 @@
 package io.geobit.chain.clients;
 
-import static io.geobit.statics.Log.log;
+import static io.geobit.common.statics.Log.log;
 import io.geobit.chain.entity.blockr.BlockrBalance;
 import io.geobit.chain.entity.blockr.BlockrBalanceData;
-import io.geobit.chain.providers.BalanceProvider;
 import io.geobit.chain.providers.BlockProvider;
 import io.geobit.chain.providers.PushTxProvider;
-import io.geobit.chain.providers.ReceivedProvider;
 import io.geobit.chain.providers.TransHexProvider;
 import io.geobit.chain.providers.TransactionProvider;
+import io.geobit.chain.providers.balance.BalanceProvider;
+import io.geobit.chain.providers.received.ReceivedProvider;
 import io.geobit.common.entity.Block;
 import io.geobit.common.entity.Transaction;
-import io.geobit.statics.StaticNumbers;
-import io.geobit.statics.SimpleDateFormats;
-import io.geobit.statics.StaticStrings;
+import io.geobit.common.statics.SimpleDateFormats;
+import io.geobit.common.statics.StaticNumbers;
+import io.geobit.common.statics.StaticStrings;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;

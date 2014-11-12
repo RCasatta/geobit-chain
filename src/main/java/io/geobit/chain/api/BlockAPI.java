@@ -1,5 +1,7 @@
 package io.geobit.chain.api;
 
+import io.geobit.common.statics.StaticStrings;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -14,6 +16,6 @@ public class BlockAPI {
 	@Path("/{hash}")
 	@Produces({MediaType.APPLICATION_JSON}) 
 	public Response addressTransactions(@PathParam("hash") String hash) {
-		return Response.ok("{}").build();
+		return Response.ok(StaticStrings.UNDER_CONSTRUCTION_JSON).build();
 	}
 }

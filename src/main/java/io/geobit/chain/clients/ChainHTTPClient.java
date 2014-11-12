@@ -1,9 +1,9 @@
 package io.geobit.chain.clients;
 
-import static io.geobit.statics.Log.log;
-import io.geobit.chain.providers.BalanceProvider;
-import io.geobit.chain.providers.ReceivedProvider;
-import io.geobit.statics.StaticNumbers;
+import static io.geobit.common.statics.Log.log;
+import io.geobit.chain.providers.balance.BalanceProvider;
+import io.geobit.chain.providers.received.ReceivedProvider;
+import io.geobit.common.statics.StaticNumbers;
 
 import org.codehaus.jettison.json.JSONObject;
 

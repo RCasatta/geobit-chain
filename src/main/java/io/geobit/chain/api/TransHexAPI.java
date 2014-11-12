@@ -1,5 +1,7 @@
 package io.geobit.chain.api;
 
+import io.geobit.common.statics.StaticStrings;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -12,8 +14,8 @@ public class TransHexAPI {
 
 	@GET
 	@Path("/{txhash}")
-	@Produces({MediaType.TEXT_PLAIN}) 
+	@Produces({MediaType.APPLICATION_JSON}) 
 	public Response balance(@PathParam("tx-hash") String txHash) {
-		return Response.ok("00001010101110101010").build();
+		return Response.ok(StaticStrings.UNDER_CONSTRUCTION_JSON).build();
 	}
 }

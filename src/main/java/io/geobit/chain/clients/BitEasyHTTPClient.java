@@ -1,12 +1,15 @@
 package io.geobit.chain.clients;
 
-import static io.geobit.statics.Log.log;
+import static io.geobit.common.statics.Log.log;
 import io.geobit.chain.entity.biteasy.BitEasyAddressData;
 import io.geobit.chain.entity.biteasy.BitEasyResponse;
-import io.geobit.chain.providers.BalanceProvider;
-import io.geobit.chain.providers.ReceivedProvider;
-import io.geobit.statics.StaticNumbers;
-import io.geobit.statics.StaticStrings;
+import io.geobit.chain.providers.balance.BalanceProvider;
+import io.geobit.chain.providers.received.ReceivedProvider;
+import io.geobit.common.statics.StaticNumbers;
+import io.geobit.common.statics.StaticStrings;
+
+
+
 
 
 import javax.ws.rs.core.MediaType;
