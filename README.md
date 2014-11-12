@@ -5,7 +5,7 @@ Decentralized infrastructure should not have a single point of failure.
 There are multiple excellent block explorer out there but we don't want to dependent on a single one.
 
 ## Solution
-A failover solution that has multiple sources of information and ask every data to at least two different provider.
+A fail-over solution that has multiple sources of information and ask every data to at least two different providers.
 This way we can improve availability, dependability, safeness and performance of the data retrieved.
 
 ## Build
@@ -16,3 +16,4 @@ cd geobit-chain
 mvn install
 java -jar target/chain/WEB-INF/lib/jetty-runner-8.1.0.RC5.jar target/chain.war
 ```
+Open your browser at http://localhost:8080
