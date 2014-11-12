@@ -9,13 +9,10 @@ A failover solution that has multiple sources of information and ask every data 
 This way we can improve availability, dependability, safeness and performance of the data retrieved.
 
 ## Build
-### Requirements
-Java, Maven
-### Build
+java, mvn and git are required to build and run
 ```
+git clone https://github.com/RCasatta/geobit-chain
+cd geobit-chain
 mvn install
-```
-### Launch
-```
 java -jar target/chain/WEB-INF/lib/jetty-runner-8.1.0.RC5.jar target/chain.war
 ```
