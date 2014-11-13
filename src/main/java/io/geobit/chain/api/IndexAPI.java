@@ -20,9 +20,9 @@ public class IndexAPI {
 		String linkli = "<li><a href=\"btc/v1/%s\">%s</a></li>";
 		String foot   = "</ul></html></body>";
 		
-		String myAddress = "1DiWBDy3eejMtUUPAvVLqWmPVsecbqbrSU";
-		String anotherAddress = "1dice8EMZmqKvrGE4Qc9bUFf9PX3xaYDp";
-		String txHash    = "ec0b571d8eafa5ccbb81a509e563b8142d045aece050909154b638758cc5d425";
+		String myAddress      = "1DiWBDy3eejMtUUPAvVLqWmPVsecbqbrSU";
+		String anotherAddress = "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa";
+		String txHash         = "ec0b571d8eafa5ccbb81a509e563b8142d045aece050909154b638758cc5d425";
 		
 		String balanceLinks = String.format(link, "balance/" +myAddress               , "balance") + ", " +
 				String.format(link, "balance/" +myAddress + ","  +anotherAddress      , "multi balance") + ", " +

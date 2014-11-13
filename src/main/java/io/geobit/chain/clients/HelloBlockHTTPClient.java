@@ -7,10 +7,10 @@ import io.geobit.chain.entity.helloblock.HelloBlockBlock;
 import io.geobit.chain.entity.helloblock.HelloBlockData;
 import io.geobit.chain.entity.helloblock.HelloBlockResponse;
 import io.geobit.chain.entity.helloblock.HelloBlockTransaction;
-import io.geobit.chain.providers.AddressTransactionsProvider;
-import io.geobit.chain.providers.BlockProvider;
 import io.geobit.chain.providers.TransactionProvider;
+import io.geobit.chain.providers.addresstransactions.AddressTransactionsProvider;
 import io.geobit.chain.providers.balance.BalanceProvider;
+import io.geobit.chain.providers.block.BlockProvider;
 import io.geobit.chain.providers.received.ReceivedProvider;
 import io.geobit.common.entity.AddressTransactions;
 import io.geobit.common.entity.Block;
@@ -253,7 +253,7 @@ TransactionProvider,  BlockProvider, AddressTransactionsProvider {
 					.accept( MediaType.APPLICATION_JSON)
 					.header("User-Agent", StaticStrings.USER_AGENT)
 					.get(HelloBlockResponse.class);
-			System.out.println("helloblock getblock " +result);
+			//System.out.println("helloblock getblock " +result);
 
 //			List<String> transactions = new ArrayList<String>();
 //			for( HelloBlockTransaction curr : result.getData().getTransactions() )

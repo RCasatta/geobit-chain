@@ -30,6 +30,15 @@ public abstract class Provider<T> {
 		}
 		return t;
 	}
+	
+	public synchronized T takeDifferent(T other , T other2) {
+		T t = takeDifferent(other);
+		
+		if(t==other2) {
+			return takeDifferent(other,other2);
+		}
+		return t;
+	}
 
 	public synchronized void add(T provider) {
 		list.add(provider);

@@ -2,17 +2,17 @@ package io.geobit.chain.dispatchers;
 
 import static io.geobit.common.statics.Log.log;
 import io.geobit.chain.providers.balance.BalanceCheckRunnable;
+import io.geobit.chain.providers.balance.BalanceFutureCallback;
 import io.geobit.chain.providers.balance.BalanceProvider;
 import io.geobit.chain.providers.balance.BalanceProviders;
 import io.geobit.chain.providers.balance.BalanceRunnable;
-import io.geobit.chain.providers.balance.BalanceFutureCallback;
+import io.geobit.chain.providers.received.ReceivedCheckRunnable;
 import io.geobit.chain.providers.received.ReceivedFutureCallback;
 import io.geobit.chain.providers.received.ReceivedProvider;
 import io.geobit.chain.providers.received.ReceivedProviders;
 import io.geobit.chain.providers.received.ReceivedRunnable;
 
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -25,7 +25,7 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 
-public class BalanceAndReceivedDispatchers 
+public class BalanceAndReceivedDispatcher 
 implements BalanceProvider, ReceivedProvider {
 
 	private ExecutorService              executor     = Executors.newFixedThreadPool(10);
@@ -35,26 +35,25 @@ implements BalanceProvider, ReceivedProvider {
 	private ReceivedProviders    receivedProviders    = new ReceivedProviders();
 	private LoadingCache<String, Long> cache;
 
-	private static BalanceAndReceivedDispatchers me;
+	private static BalanceAndReceivedDispatcher me;
 
-	public static BalanceAndReceivedDispatchers getInstance() {
+	public static BalanceAndReceivedDispatcher getInstance() {
 		if(me==null) {
-			me=new BalanceAndReceivedDispatchers();
+			me=new BalanceAndReceivedDispatcher();
 		}	
 		return me;
 	}
 
-	private BalanceAndReceivedDispatchers() {
+	private BalanceAndReceivedDispatcher() {
 		initializeCache();
 	}
 
 	private void initializeCache() {
 		cache = CacheBuilder.newBuilder()
-				.maximumSize(100000)
-				.recordStats()
+				.maximumSize(1000000) /* keep in memory 1M balance and received */
 				.build(
 						new CacheLoader<String, Long>() {
-							public Long load(String cacheAddress) {
+							public Long load(String cacheAddress) {  /* never been called */
 								log("BalanceAndReceivedDispatchers cache LOADING key " + cacheAddress);
 								if( cacheAddress.startsWith("b/") )
 									return getBalance(cacheAddress.substring(2) );
@@ -86,7 +85,7 @@ implements BalanceProvider, ReceivedProvider {
 	}
 
 	public Long getBalance(String address, int cont) {
-		if(cont>3)
+		if(cont>5)
 			return null;
 		Long valCache = cache.getIfPresent("b/"+address);
 		BalanceProvider bal1 = balanceProviders.take();
@@ -123,7 +122,7 @@ implements BalanceProvider, ReceivedProvider {
 		return getReceived(address,0);
 	}
 	public Long getReceived(String address, int cont) {
-		if(cont>3)
+		if(cont>5)
 			return null;
 		Long valCache = cache.getIfPresent("r/"+address);
 		ReceivedProvider rec1 = receivedProviders.take();
@@ -138,8 +137,8 @@ implements BalanceProvider, ReceivedProvider {
 		SettableFuture<Long> returned = SettableFuture.create();
 		Futures.addCallback(listenableFuture1,new ReceivedFutureCallback(start,  rec1, returned, receivedProviders ));
 		Futures.addCallback(listenableFuture2,new ReceivedFutureCallback(start,  rec2, returned, receivedProviders ));
-		/* check balance runnable??? */
-		/* how to spot providers returning wrong values? */
+		Runnable checker = new ReceivedCheckRunnable(address,listenableFuture1, rec1, listenableFuture2, rec2, receivedProviders, cache); 
+		moreExecutor.execute(checker);
 		
 		Long valRet;
 		try {

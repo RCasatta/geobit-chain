@@ -1,8 +1,9 @@
-package io.geobit.chain.providers;
+package io.geobit.chain.providers.block;
 
 import io.geobit.chain.clients.BlockChainHTTPClient;
 import io.geobit.chain.clients.BlockrHTTPClient;
 import io.geobit.chain.clients.HelloBlockHTTPClient;
+import io.geobit.chain.providers.Provider;
 
 public class BlockProviders extends Provider<BlockProvider> {
 

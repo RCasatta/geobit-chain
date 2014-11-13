@@ -1,5 +1,7 @@
 package io.geobit.chain.api;
 
+import io.geobit.chain.dispatchers.BlockAndTransactionDispatcher;
+import io.geobit.common.entity.Block;
 import io.geobit.common.statics.StaticStrings;
 
 import javax.ws.rs.GET;
@@ -13,9 +15,18 @@ import javax.ws.rs.core.Response;
 public class BlockAPI {
 
 	@GET
-	@Path("/{hash}")
+	@Path("/{height}")
 	@Produces({MediaType.APPLICATION_JSON}) 
-	public Response addressTransactions(@PathParam("hash") String hash) {
-		return Response.ok(StaticStrings.UNDER_CONSTRUCTION_JSON).build();
+	public Response addressTransactions(@PathParam("height") String sHeight) {
+		BlockAndTransactionDispatcher disp=BlockAndTransactionDispatcher.getInstance();
+		Integer height;
+		try {
+			height=Integer.parseInt(sHeight);
+		} catch (Exception e) {
+			return Response.status(400).build();
+		}
+		Block b=disp.getBlock(height);
+		
+		return Response.ok(b).build();
 	}
 }

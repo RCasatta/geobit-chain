@@ -4,7 +4,7 @@ import io.geobit.chain.api.TransactionAPI;
 import io.geobit.chain.entity.sochain.SoChainData;
 import io.geobit.chain.entity.sochain.SoChainResponse;
 import io.geobit.chain.entity.sochain.SoChainTransaction;
-import io.geobit.chain.providers.AddressTransactionsProvider;
+import io.geobit.chain.providers.addresstransactions.AddressTransactionsProvider;
 import io.geobit.chain.providers.balance.BalanceProvider;
 import io.geobit.common.entity.AddressTransactions;
 import io.geobit.common.statics.StaticNumbers;

@@ -1,5 +1,6 @@
-package io.geobit.chain.providers;
+package io.geobit.chain.providers.block;
 
+import io.geobit.chain.providers.Prefix;
 import io.geobit.common.entity.Block;
 
 

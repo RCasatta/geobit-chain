@@ -1,6 +1,6 @@
 package io.geobit.chain.api;
 
-import io.geobit.chain.dispatchers.BalanceAndReceivedDispatchers;
+import io.geobit.chain.dispatchers.BalanceAndReceivedDispatcher;
 import io.geobit.common.btc.Validator;
 
 import java.util.Date;
@@ -27,7 +27,7 @@ public class ReceivedAPI {
 	@Produces({MediaType.TEXT_PLAIN}) 
 	public Response received(@PathParam("address") String address, @QueryParam("cache") String cache) {
 		String returned="";
-		BalanceAndReceivedDispatchers disp = BalanceAndReceivedDispatchers.getInstance();
+		BalanceAndReceivedDispatcher disp = BalanceAndReceivedDispatcher.getInstance();
 		boolean useCache = (cache!=null);
 		
 		if(address.contains(",")) {

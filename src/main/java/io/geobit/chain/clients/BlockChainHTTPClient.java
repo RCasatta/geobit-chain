@@ -2,12 +2,12 @@ package io.geobit.chain.clients;
 
 import static io.geobit.common.statics.Log.log;
 import io.geobit.chain.entity.blockchain.BlockChainTransaction;
-import io.geobit.chain.providers.AddressTransactionsProvider;
-import io.geobit.chain.providers.BlockProvider;
 import io.geobit.chain.providers.PushTxProvider;
 import io.geobit.chain.providers.TransHexProvider;
 import io.geobit.chain.providers.TransactionProvider;
+import io.geobit.chain.providers.addresstransactions.AddressTransactionsProvider;
 import io.geobit.chain.providers.balance.BalanceProvider;
+import io.geobit.chain.providers.block.BlockProvider;
 import io.geobit.chain.providers.received.ReceivedProvider;
 import io.geobit.common.entity.AddressTransactions;
 import io.geobit.common.entity.Block;

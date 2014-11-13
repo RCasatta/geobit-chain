@@ -1,5 +1,6 @@
-package io.geobit.chain.providers;
+package io.geobit.chain.providers.addresstransactions;
 
+import io.geobit.chain.providers.Prefix;
 import io.geobit.common.entity.AddressTransactions;
 
 

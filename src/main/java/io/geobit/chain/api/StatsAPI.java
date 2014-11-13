@@ -1,6 +1,6 @@
 package io.geobit.chain.api;
 
-import io.geobit.chain.dispatchers.BalanceAndReceivedDispatchers;
+import io.geobit.chain.dispatchers.BalanceAndReceivedDispatcher;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -17,7 +17,7 @@ public class StatsAPI {
 		String head="<html><body>";
 		String foot="</html></body>";
 		
-		BalanceAndReceivedDispatchers disp = BalanceAndReceivedDispatchers.getInstance();
+		BalanceAndReceivedDispatcher disp = BalanceAndReceivedDispatcher.getInstance();
 		String pre1 = "<pre>" +	disp.getBalanceProviders().getTimers().toString() +"</pre>";
 		String pre2 = "<pre>" +	disp.getReceivedProviders().getTimers().toString() +"</pre>";
 		

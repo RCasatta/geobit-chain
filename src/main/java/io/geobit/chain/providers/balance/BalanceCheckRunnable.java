@@ -32,7 +32,6 @@ public class BalanceCheckRunnable implements Runnable {
 
 	@Override
 	public void run() {
-		BalanceProvider thirdProvider=null;
 		try {
 			System.out.println("started check balance");
 			Long firstResult  = firstFuture.get();
@@ -46,11 +45,7 @@ public class BalanceCheckRunnable implements Runnable {
 			if(!Objects.equal( firstResult , secondResult))  {
 				
 				/* HANDLING DIFFERENCE */
-				BalanceProvider current=null;
-				do { /* need to take a provider different from the first and the second */
-					current=providers.takeDifferent(firstProvider);
-				} while( secondProvider==current );
-				thirdProvider=current;
+				BalanceProvider thirdProvider = providers.takeDifferent(firstProvider,secondProvider);
 				
 				Long thirdResult=thirdProvider.getBalance(address);
 				if( Objects.equal( firstResult , thirdResult) ) {

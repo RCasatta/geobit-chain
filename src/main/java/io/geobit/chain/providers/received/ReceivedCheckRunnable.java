@@ -1,8 +1,5 @@
 package io.geobit.chain.providers.received;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import com.google.common.base.Objects;
@@ -35,7 +32,6 @@ public class ReceivedCheckRunnable implements Runnable {
 
 	@Override
 	public void run() {
-		ReceivedProvider thirdProvider=null;
 		try {
 			System.out.println("started check received");
 			Long firstResult  = firstFuture.get();
@@ -49,11 +45,7 @@ public class ReceivedCheckRunnable implements Runnable {
 			if(!Objects.equal( firstResult , secondResult))  {
 				
 				/* HANDLING DIFFERENCE */
-				ReceivedProvider current=null;
-				do { /* need to take a provider different from the first and the second */
-					current=providers.takeDifferent(firstProvider);
-				} while( secondProvider==current );
-				thirdProvider=current;
+				ReceivedProvider thirdProvider=providers.takeDifferent(firstProvider,secondProvider);
 				
 				Long thirdResult=thirdProvider.getReceived(address);
 				if( Objects.equal( firstResult , thirdResult) ) {
