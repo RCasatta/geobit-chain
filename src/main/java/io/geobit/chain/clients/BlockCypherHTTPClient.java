@@ -1,25 +1,45 @@
+/*
+ * The MIT License (MIT)
+ * 
+ * Copyright (c) 2014 geobit.io 
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
 package io.geobit.chain.clients;
 
+import static io.geobit.common.statics.Log.error;
 import static io.geobit.common.statics.Log.log;
-import io.geobit.chain.providers.PushTxProvider;
 import io.geobit.chain.providers.balance.BalanceProvider;
+import io.geobit.chain.providers.pushtx.PushTxProvider;
 import io.geobit.common.statics.StaticNumbers;
 import io.geobit.common.statics.StaticStrings;
-
-import java.net.URI;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.core.MediaType;
 
 import org.codehaus.jettison.json.JSONObject;
 
-import com.google.common.primitives.Booleans;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.GZIPContentEncodingFilter;
-import com.sun.jersey.client.urlconnection.URLConnectionClientHandler;
+
 public class BlockCypherHTTPClient implements BalanceProvider,  PushTxProvider {
 	private static final String prefix=  "http://api.blockcypher.com/v1/btc/main";
 
@@ -54,11 +74,9 @@ public class BlockCypherHTTPClient implements BalanceProvider,  PushTxProvider {
 					.header("Accept-Encoding", "gzip")
 					
 					.get(String.class);
-//			System.out.println(bilancio);
 
 			JSONObject obj = new JSONObject(bilancio);
 			Long val=obj.getLong("final_balance");
-//			Long val=Long.parseLong(bilancio);
 			return val;
 		} catch (Exception e) { 
 			String message = e.getMessage();
@@ -66,13 +84,9 @@ public class BlockCypherHTTPClient implements BalanceProvider,  PushTxProvider {
 				return 0L;
 			else {
 				String mes = "BlockCypherHTTPClient getBalance excpetion " + e.getMessage();
-				System.out.println(mes);
-				log(mes );
-				
+				error(mes);
 			}
 		}
-		//		Double val=bilancio.getFinalBalance().get("BTC");
-		//		return Math.round(val*Numbers.SATOSHIS);
 		return null;
 	}
 
@@ -87,7 +101,7 @@ public class BlockCypherHTTPClient implements BalanceProvider,  PushTxProvider {
 	@Override
 	public Boolean pushTx(String hex) {
 		try {
-			System.out.println("BlockCypherHTTPClient pushTx " + hex);
+			log("BlockCypherHTTPClient pushTx " + hex);
 			String toPost=String.format("{\"tx\": \"%s\"}", hex);
 			ClientResponse response = pushTx
 					.header("User-Agent", StaticStrings.USER_AGENT)
@@ -95,10 +109,10 @@ public class BlockCypherHTTPClient implements BalanceProvider,  PushTxProvider {
 					.post(ClientResponse.class, toPost );
 
 			String ret=response.getEntity(String.class);
-			System.out.println("pushing transaction returned " + ret);
+			log("pushing transaction returned " + ret);
 			return response.getStatus()==200;
 		} catch (Exception e) {
-			log("BlockCypherHTTPClient PushTx error " + e.getMessage());
+			error("BlockCypherHTTPClient PushTx error " + e.getMessage());
 		}
 		return null;
 	}

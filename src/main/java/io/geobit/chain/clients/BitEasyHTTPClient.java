@@ -1,6 +1,29 @@
+/*
+ * The MIT License (MIT)
+ * 
+ * Copyright (c) 2014 geobit.io 
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
 package io.geobit.chain.clients;
 
-import static io.geobit.common.statics.Log.log;
 import io.geobit.chain.entity.biteasy.BitEasyAddressData;
 import io.geobit.chain.entity.biteasy.BitEasyResponse;
 import io.geobit.chain.providers.balance.BalanceProvider;
@@ -8,14 +31,12 @@ import io.geobit.chain.providers.received.ReceivedProvider;
 import io.geobit.common.statics.StaticNumbers;
 import io.geobit.common.statics.StaticStrings;
 
-
-
-
-
 import javax.ws.rs.core.MediaType;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
+
+import static io.geobit.common.statics.Log.*;
 
 
 public class BitEasyHTTPClient implements BalanceProvider, ReceivedProvider {
@@ -51,13 +72,12 @@ public class BitEasyHTTPClient implements BalanceProvider, ReceivedProvider {
 					.accept( MediaType.APPLICATION_JSON)
 					.header("User-Agent", StaticStrings.USER_AGENT)
 					.get(BitEasyResponse.class);
-			//		System.out.println("result=" + result);
+
 			if(result!=null) {
 				if(result.getStatus()==200) {
 					BitEasyAddressData balData= result.getData();
 					if(balData!=null) {
 						Long balance2 = balData.getBalance();
-						//				System.out.println( balance.getURI() + " returns " + balance2);
 						return balance2;
 					}
 
@@ -73,8 +93,7 @@ public class BitEasyHTTPClient implements BalanceProvider, ReceivedProvider {
 				log("biteasy getBalance reach threshold" );
 			} else {
 				String mes = "exception on biteasy getBalance " + message;
-				System.out.println(mes);
-				log(mes );
+				error(mes);
 			}
 		}
 		return null;
@@ -90,7 +109,7 @@ public class BitEasyHTTPClient implements BalanceProvider, ReceivedProvider {
 					.accept( MediaType.APPLICATION_JSON)
 					.header("User-Agent", StaticStrings.USER_AGENT)
 					.get(BitEasyResponse.class);
-			//		System.out.println("result=" + result);
+
 			if(result!=null && result.getStatus()==200) {
 				BitEasyAddressData balData= result.getData();
 				if(balData!=null)
@@ -110,8 +129,7 @@ public class BitEasyHTTPClient implements BalanceProvider, ReceivedProvider {
 				log("biteasy getReceived reach threshold" );
 			} else {
 				String mes = "exception on biteasy getReceived " + message;
-				System.out.println(mes);
-				log(mes );
+				error(mes);
 			}
 		}
 		return null;

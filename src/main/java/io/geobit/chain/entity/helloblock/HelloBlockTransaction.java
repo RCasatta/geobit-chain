@@ -1,12 +1,40 @@
+/*
+ * The MIT License (MIT)
+ * 
+ * Copyright (c) 2014 geobit.io 
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
 package io.geobit.chain.entity.helloblock;
 
 import io.geobit.chain.providers.TransactionGetter;
 import io.geobit.common.entity.Transaction;
+import io.geobit.common.entity.TransactionInOut;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
+
+import static io.geobit.common.statics.Log.*;
 
 @XmlRootElement
 public class HelloBlockTransaction implements TransactionGetter {
@@ -69,49 +97,36 @@ public class HelloBlockTransaction implements TransactionGetter {
 	}
 	@Override
 	public Transaction getTransaction() {
+		log(this.toString());
 		Transaction t = new Transaction();
-		System.out.println("processing=" + this );
-//		
-//		t.setSpent(false);  //TODO check
-//		
-//		t.setHash(getTxHash());
-//		int n=0;
-//		int index=0;
-//		List<String> toList=new LinkedList<String>();
-//		List<TransactionOut> toOuts=new LinkedList<TransactionOut>();
-//		for( HelloBlockOutput current : getOutputs() ) {
-//			String address = current.getAddress();
-//			toList.add(address);
-//			if(address.equals(myAddr)) {
-//				t.setValue(current.getValue());
-//				t.setIndex(index);
-//				t.setSpent(current.getSpent());	
-//				if(!current.getSpent())
-//					n++;
-//			} else {
-//				t.setTemp(address);
-//				t.setTempValue(current.getValue());
-//				
-//			}
-//			
-//			TransactionOut toOut = new TransactionOut();
-//			toOut.setAddress(address);
-//			toOut.setIndex(current.getIndex());
-//			toOut.setValue(current.getValue());
-//			toOut.setSpent(current.getSpent());
-//			
-//			index++;
-//		}
-//		t.setToList(toList);
-//		t.setOutList(toOuts);
-//		HelloBlockInput helloBlockInput = getInputs().get(0);
-//		
-//		String address = helloBlockInput.getAddress();
-//		t.setFrom( address );
-//		t.setPrevTxHash( helloBlockInput.getPrevTxHash() );
-//		t.setTimestamp(getBlockTime());
-//		t.setBlockHeight(getBlockHeight());
-//		t.setN(n);
+		
+		t.setHash(getTxHash());
+		t.setTimestamp(getBlockTime());
+		t.setHash(getTxHash());
+		t.setBlockHeight(getBlockHeight()); 
+		
+		List<TransactionInOut> toOuts=new LinkedList<TransactionInOut>();
+		for( HelloBlockOutput current : getOutputs() ) {
+			TransactionInOut nuova=new TransactionInOut();
+			nuova.setAddress(current.getAddress());
+			nuova.setValue(current.getValue());
+			nuova.setIndex(current.getIndex());
+			nuova.setSpent(current.getSpent());
+			toOuts.add(nuova);
+		}
+		Collections.sort(toOuts);
+		t.setOut(toOuts);
+		
+		List<TransactionInOut> fromIns=new LinkedList<TransactionInOut>();
+		for( HelloBlockInput current : getInputs() ) {
+			TransactionInOut nuova=new TransactionInOut();
+			nuova.setAddress(current.getAddress());
+			nuova.setValue(current.getValue());
+			fromIns.add(nuova);
+		}
+		Collections.sort(fromIns);
+		t.setIn(fromIns);
+		
 		return t;
 	}
 

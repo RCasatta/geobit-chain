@@ -1,6 +1,31 @@
+/*
+ * The MIT License (MIT)
+ * 
+ * Copyright (c) 2014 geobit.io 
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
 package io.geobit.chain.dispatchers;
 
 import static io.geobit.common.statics.Log.log;
+import static io.geobit.common.statics.Log.error;
 import io.geobit.chain.providers.balance.BalanceCheckRunnable;
 import io.geobit.chain.providers.balance.BalanceFutureCallback;
 import io.geobit.chain.providers.balance.BalanceProvider;
@@ -90,7 +115,7 @@ implements BalanceProvider, ReceivedProvider {
 		Long valCache = cache.getIfPresent("b/"+address);
 		BalanceProvider bal1 = balanceProviders.take();
 		BalanceProvider bal2 = balanceProviders.takeDifferent(bal1);
-		System.out.println("bal1=" + bal1 + " bal2="+bal2);
+		log("bal1=" + bal1 + " bal2="+bal2);
 		Callable<Long> runner1    = new BalanceRunnable(bal1, address);
 		Callable<Long> runner2   = new BalanceRunnable(bal2, address);
 		final Long start=System.currentTimeMillis();
@@ -113,7 +138,9 @@ implements BalanceProvider, ReceivedProvider {
 				return first;
 			}
 		} catch (Exception e) {		
+			error("BalanceAndReceivedDispatcher getReceived " + e.getMessage() );
 		}
+		/*waiting?*/
 		return getBalance(address,cont+1);
 	}
 
@@ -127,7 +154,7 @@ implements BalanceProvider, ReceivedProvider {
 		Long valCache = cache.getIfPresent("r/"+address);
 		ReceivedProvider rec1 = receivedProviders.take();
 		ReceivedProvider rec2 = receivedProviders.takeDifferent(rec1);
-		System.out.println("rec1=" + rec1 + " rec2="+rec2);
+		log("rec1=" + rec1 + " rec2="+rec2);
 		
 		Callable<Long> runner1 = new ReceivedRunnable(rec1, address);
 		Callable<Long> runner2 = new ReceivedRunnable(rec2, address);
@@ -156,7 +183,7 @@ implements BalanceProvider, ReceivedProvider {
 			else if(second!= null)	cache.put("r/" + address, second);
 			
 		} catch (Exception e) {
-			
+			error("BalanceAndReceivedDispatcher getReceived " + e.getMessage() );
 		}
 		return getBalance(address,cont+1);
 	}
@@ -176,4 +203,10 @@ implements BalanceProvider, ReceivedProvider {
 		return receivedProviders;
 	}
 
+	public LoadingCache<String, Long> getCache() {
+		return cache;
+	}
+
+	
+	
 }

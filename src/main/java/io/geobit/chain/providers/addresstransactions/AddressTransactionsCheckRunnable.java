@@ -1,14 +1,36 @@
+/*
+ * The MIT License (MIT)
+ * 
+ * Copyright (c) 2014 geobit.io 
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
 package io.geobit.chain.providers.addresstransactions;
 
 import io.geobit.common.entity.AddressTransactions;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import com.google.common.base.Objects;
 import com.google.common.cache.LoadingCache;
+import static io.geobit.common.statics.Log.*;
 
 public class AddressTransactionsCheckRunnable implements Runnable {
 	private String address;
@@ -39,7 +61,7 @@ public class AddressTransactionsCheckRunnable implements Runnable {
 	public void run() {
 		AddressTransactionsProvider thirdProvider=null;
 		try {
-			System.out.println("started check received");
+			log("started check received");
 			AddressTransactions firstResult  = firstFuture.get();
 			AddressTransactions secondResult = secondFuture.get();
 			String format = String.format("balance(%s)=%s from %s "
@@ -47,7 +69,7 @@ public class AddressTransactionsCheckRunnable implements Runnable {
 					address, 
 					firstResult, firstProvider,
 					secondResult, secondProvider );
-			System.out.println(format);
+			log(format);
 			if(!Objects.equal( firstResult , secondResult))  {
 				
 				/* HANDLING DIFFERENCE */
@@ -56,24 +78,24 @@ public class AddressTransactionsCheckRunnable implements Runnable {
 					current=providers.takeDifferent(firstProvider);
 				} while( secondProvider==current );
 				thirdProvider=current;
-				
+				String aCapo="\n%s\n";
 				AddressTransactions thirdResult=thirdProvider.getAddressTransactions(address);
 				if( Objects.equal( firstResult , thirdResult) ) {
-					System.out.println(secondProvider + " gave bad result " + secondResult +". correct received(" + address + ") is " + firstResult + " from " + firstProvider  + " and " + thirdProvider  );
+					error(secondProvider + " gave bad result " +  String.format(aCapo, secondResult) +". correct addTxs(" + address + ") is " + "\n" + String.format(aCapo,firstResult) + " from " + firstProvider  + " and " + thirdProvider  );
 					addressTransactionsCache.put(address, firstResult);
 					providers.record(secondProvider, null);
 				} else if (Objects.equal( secondResult , thirdResult)) {
-					System.out.println(firstProvider  + " gave bad result " + firstResult +". correct received(" + address + ") is " + secondResult + " from " + secondProvider + " and " + thirdProvider  );
+					error(firstProvider  + " gave bad result " + "\n" + String.format(aCapo,firstResult) +". correct addTxs(" + address + ") is " + "\n" + String.format(aCapo,secondResult) + " from " + secondProvider + " and " + thirdProvider  );
 					addressTransactionsCache.put(address, secondResult);
 					providers.record(firstProvider, null);
 				} else {
-					System.out.println("THREE DIFFERENT RESULT!!!! for " + address + " are " + firstResult + " " + secondResult + " " + thirdResult);
+					error("THREE DIFFERENT RESULT!!!! for " + address + " are " + "\n" + String.format(aCapo,firstResult) + " " + "\n" + String.format(aCapo,secondResult) + " " + "\n" + String.format(aCapo,thirdResult));
 				}
 				
 			}
 			
 		} catch (Exception e) {
-			System.out.println("CheckAddressTransactionsRunnable exception " + e.getMessage() );
+			error("CheckAddressTransactionsRunnable exception " + e.getMessage() );
 		}
 	}
 
