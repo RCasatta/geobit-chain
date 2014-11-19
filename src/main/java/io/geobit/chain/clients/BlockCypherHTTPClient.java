@@ -28,6 +28,7 @@ import static io.geobit.common.statics.Log.error;
 import static io.geobit.common.statics.Log.log;
 import io.geobit.chain.providers.balance.BalanceProvider;
 import io.geobit.chain.providers.pushtx.PushTxProvider;
+import io.geobit.common.statics.ApiKeys;
 import io.geobit.common.statics.StaticNumbers;
 import io.geobit.common.statics.StaticStrings;
 
@@ -69,7 +70,7 @@ public class BlockCypherHTTPClient implements BalanceProvider,  PushTxProvider {
 	public Long getBalance(String address) {
 		try {
 			String bilancio=balance
-					.queryParam("token", "4314170c99337e9984152a4af0ba77c0")
+					.queryParam("token", ApiKeys.BLOCKCYPHER)
 					.path(address + "/balance")
 					.header("Accept-Encoding", "gzip")
 					

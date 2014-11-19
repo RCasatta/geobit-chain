@@ -38,6 +38,7 @@ import io.geobit.chain.providers.transhex.TransHexProvider;
 import io.geobit.common.entity.AddressTransactions;
 import io.geobit.common.entity.Block;
 import io.geobit.common.entity.Transaction;
+import io.geobit.common.statics.ApiKeys;
 import io.geobit.common.statics.StaticNumbers;
 import io.geobit.common.statics.StaticStrings;
 
@@ -101,7 +102,7 @@ TransHexProvider {
 
 			BlockChainTransaction add=transaction
 					.path(txHash)
-					.queryParam("api_code", "90ab63e1-3d4a-4d20-a64b-560f845c14b0")
+					.queryParam("api_code", ApiKeys.BLOCKCHAIN)
 					.accept( MediaType.APPLICATION_JSON)
 					.header("User-Agent", StaticStrings.USER_AGENT)
 					.get(BlockChainTransaction.class);

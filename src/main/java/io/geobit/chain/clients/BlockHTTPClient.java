@@ -27,6 +27,7 @@ package io.geobit.chain.clients;
 import static io.geobit.common.statics.Log.error;
 import static io.geobit.common.statics.Log.log;
 import io.geobit.chain.providers.balance.BalanceProvider;
+import io.geobit.common.statics.ApiKeys;
 import io.geobit.common.statics.StaticNumbers;
 import io.geobit.common.statics.StaticStrings;
 
@@ -62,7 +63,7 @@ public class BlockHTTPClient implements BalanceProvider {
 		try {
 			String result = balance
 					.path(address)
-					.queryParam("api_key", "94e7-3862-0147-0f17")
+					.queryParam("api_key", ApiKeys.BLOCK )
 					.queryParam("address", address)
 					.accept(MediaType.TEXT_PLAIN)
 					.header("User-Agent", StaticStrings.USER_AGENT)

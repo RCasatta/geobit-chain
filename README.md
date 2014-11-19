@@ -24,6 +24,24 @@ java -jar target/chain/WEB-INF/lib/jetty-runner-8.1.0.RC5.jar target/chain.war
 ```
 Open your browser at [localhost:8080](http://localhost:8080)
 
+## Block Explorers
+* https://www.biteasy.com
+* https://blockchain.info
+* http://www.blockcypher.com
+* https://blockexplorer.com
+* http://block.io
+* https://blockr.io
+* https://www.blocktrail.com
+* https://chain.com
+* http://coinb.in
+* https://helloblock.io
+* https://insight.bitpay.com
+* http://mychain.io
+* https://chain.so
+
+## API Keys
+You should ask providers a personalized API key and update the ApiKeys.java source file 
+
 ## Roadmap
 * Add more providers.
 * Use generics when classes has type name in their name.

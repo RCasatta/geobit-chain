@@ -25,9 +25,9 @@
 package io.geobit.chain.clients;
 
 import static io.geobit.common.statics.Log.error;
-import static io.geobit.common.statics.Log.log;
 import io.geobit.chain.providers.balance.BalanceProvider;
 import io.geobit.chain.providers.received.ReceivedProvider;
+import io.geobit.common.statics.ApiKeys;
 import io.geobit.common.statics.StaticNumbers;
 
 import org.codehaus.jettison.json.JSONObject;
@@ -37,7 +37,7 @@ import com.sun.jersey.api.client.WebResource;
 
 public class ChainHTTPClient implements BalanceProvider, ReceivedProvider {
 	private static final String prefix= "https://api.chain.com/v1/bitcoin";
-	private static final String apiKey="2dc5fc7097de3560189a5e2f46cf4d15";
+	
 	private WebResource balance;
 
 	public ChainHTTPClient() {
@@ -56,10 +56,6 @@ public class ChainHTTPClient implements BalanceProvider, ReceivedProvider {
 		return prefix;
 	}
 
-	/*
-	 * curl https://api.chain.com/v1/bitcoin/addresses/17x23dNjXJLzGMev6R63uyRhMWP1VHawKc?key=DEMO-4a5e1e4
-	 * 
-	 */
 
 	@Override
 	public Long getBalance(String address) {
@@ -67,7 +63,7 @@ public class ChainHTTPClient implements BalanceProvider, ReceivedProvider {
 
 			String bilancio=balance
 					.path(address)
-					.queryParam("key", apiKey)
+					.queryParam("key", ApiKeys.CHAIN)
 					.get(String.class);
 
 
@@ -89,7 +85,7 @@ public class ChainHTTPClient implements BalanceProvider, ReceivedProvider {
 
 			String bilancio=balance
 					.path(address)
-					.queryParam("key", apiKey)
+					.queryParam("key", ApiKeys.CHAIN)
 					.get(String.class);
 	
 

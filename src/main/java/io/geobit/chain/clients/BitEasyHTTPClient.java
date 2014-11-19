@@ -28,6 +28,7 @@ import io.geobit.chain.entity.biteasy.BitEasyAddressData;
 import io.geobit.chain.entity.biteasy.BitEasyResponse;
 import io.geobit.chain.providers.balance.BalanceProvider;
 import io.geobit.chain.providers.received.ReceivedProvider;
+import io.geobit.common.statics.ApiKeys;
 import io.geobit.common.statics.StaticNumbers;
 import io.geobit.common.statics.StaticStrings;
 
@@ -41,7 +42,6 @@ import static io.geobit.common.statics.Log.*;
 
 public class BitEasyHTTPClient implements BalanceProvider, ReceivedProvider {
 	private static final String prefix = "https://api.biteasy.com/blockchain/v1";
-	private static final String key    = "IMCm6utjPw76RyJdsLror79a20t7EBEHB9L9eU36";
 
 	private WebResource balance;
 
@@ -68,7 +68,7 @@ public class BitEasyHTTPClient implements BalanceProvider, ReceivedProvider {
 		try {
 			BitEasyResponse result = balance
 					.path(address)
-					.queryParam("api_key", key)
+					.queryParam("api_key", ApiKeys.BITEASY)
 					.accept( MediaType.APPLICATION_JSON)
 					.header("User-Agent", StaticStrings.USER_AGENT)
 					.get(BitEasyResponse.class);
@@ -105,7 +105,7 @@ public class BitEasyHTTPClient implements BalanceProvider, ReceivedProvider {
 		try {
 			BitEasyResponse result = balance
 					.path(address)
-					.queryParam("api_key", key)
+					.queryParam("api_key", ApiKeys.BITEASY)
 					.accept( MediaType.APPLICATION_JSON)
 					.header("User-Agent", StaticStrings.USER_AGENT)
 					.get(BitEasyResponse.class);
