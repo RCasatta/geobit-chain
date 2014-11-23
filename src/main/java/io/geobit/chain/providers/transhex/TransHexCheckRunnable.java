@@ -24,10 +24,13 @@
 
 package io.geobit.chain.providers.transhex;
 
+import io.geobit.common.providers.TransHexProvider;
+
 import java.util.concurrent.Future;
 
 import com.google.common.base.Objects;
 import com.google.common.cache.LoadingCache;
+
 import static io.geobit.common.statics.Log.*;
 public class TransHexCheckRunnable implements Runnable {
 	private String txHash;

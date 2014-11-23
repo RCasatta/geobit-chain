@@ -25,9 +25,11 @@
 package io.geobit.chain.providers.transaction;
 
 import io.geobit.common.entity.Transaction;
+import io.geobit.common.providers.TransactionProvider;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.SettableFuture;
+
 import static io.geobit.common.statics.Log.*;
 
 public class TransactionFutureCallback implements FutureCallback<Transaction> {

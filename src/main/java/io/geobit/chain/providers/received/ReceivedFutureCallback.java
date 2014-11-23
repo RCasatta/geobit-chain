@@ -24,8 +24,11 @@
 
 package io.geobit.chain.providers.received;
 
+import io.geobit.common.providers.ReceivedProvider;
+
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.SettableFuture;
+
 import static io.geobit.common.statics.Log.*;
 public class ReceivedFutureCallback implements FutureCallback<Long> {
 	private Long start;

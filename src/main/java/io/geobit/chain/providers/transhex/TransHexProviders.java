@@ -28,6 +28,7 @@ import io.geobit.chain.clients.BlockChainHTTPClient;
 import io.geobit.chain.clients.BlockrHTTPClient;
 import io.geobit.chain.clients.SoChainHTTPClient;
 import io.geobit.chain.providers.Providers;
+import io.geobit.common.providers.TransHexProvider;
 
 public class TransHexProviders extends Providers<TransHexProvider> {
 

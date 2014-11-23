@@ -28,14 +28,14 @@ import static io.geobit.common.statics.Log.log;
 import static io.geobit.common.statics.Log.error;
 import io.geobit.chain.providers.balance.BalanceCheckRunnable;
 import io.geobit.chain.providers.balance.BalanceFutureCallback;
-import io.geobit.chain.providers.balance.BalanceProvider;
 import io.geobit.chain.providers.balance.BalanceProviders;
 import io.geobit.chain.providers.balance.BalanceRunnable;
 import io.geobit.chain.providers.received.ReceivedCheckRunnable;
 import io.geobit.chain.providers.received.ReceivedFutureCallback;
-import io.geobit.chain.providers.received.ReceivedProvider;
 import io.geobit.chain.providers.received.ReceivedProviders;
 import io.geobit.chain.providers.received.ReceivedRunnable;
+import io.geobit.common.providers.BalanceProvider;
+import io.geobit.common.providers.ReceivedProvider;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;

@@ -24,6 +24,8 @@
 
 package io.geobit.chain.providers.transhex;
 
+import io.geobit.common.providers.TransHexProvider;
+
 import java.util.concurrent.Callable;
 
 public class TransHexRunnable implements Callable<String> {

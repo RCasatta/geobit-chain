@@ -69,7 +69,8 @@ public class StaticStrings {
 
 
 	public static final Object UNDER_CONSTRUCTION_JSON = "{\"state\":\"under development\"}";
-
+	
+	public static final String[] MONTH_NAMES = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
 
 	
 	public static String encode(String toEncode) {

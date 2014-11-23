@@ -1,8 +1,8 @@
 package io.geobit.chain.clients;
 
-import io.geobit.chain.providers.balance.BalanceProvider;
-import io.geobit.chain.providers.transaction.TransactionProvider;
 import io.geobit.common.entity.Transaction;
+import io.geobit.common.providers.BalanceProvider;
+import io.geobit.common.providers.TransactionProvider;
 
 public class MyChainHTTPClient implements BalanceProvider, TransactionProvider {
 

@@ -24,7 +24,7 @@
 
 package io.geobit.chain.providers.pushtx;
 
-import io.geobit.chain.providers.Provider;
+import io.geobit.common.providers.Provider;
 
 public interface PushTxProvider  extends Provider {
 	public Boolean pushTx(String hex);

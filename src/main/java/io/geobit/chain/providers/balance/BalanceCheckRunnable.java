@@ -24,10 +24,13 @@
 
 package io.geobit.chain.providers.balance;
 
+import io.geobit.common.providers.BalanceProvider;
+
 import java.util.concurrent.Future;
 
 import com.google.common.base.Objects;
 import com.google.common.cache.LoadingCache;
+
 import static io.geobit.common.statics.Log.*;
 public class BalanceCheckRunnable implements Runnable {
 	private String address;

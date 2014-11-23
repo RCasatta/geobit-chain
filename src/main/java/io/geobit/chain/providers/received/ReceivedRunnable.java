@@ -24,6 +24,8 @@
 
 package io.geobit.chain.providers.received;
 
+import io.geobit.common.providers.ReceivedProvider;
+
 import java.util.concurrent.Callable;
 
 public class ReceivedRunnable implements Callable<Long> {

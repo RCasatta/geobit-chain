@@ -25,9 +25,11 @@
 package io.geobit.chain.providers.block;
 
 import io.geobit.common.entity.Block;
+import io.geobit.common.providers.BlockProvider;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.SettableFuture;
+
 import static io.geobit.common.statics.Log.*;
 public class BlockFutureCallback implements FutureCallback<Block> {
 	private Long start;

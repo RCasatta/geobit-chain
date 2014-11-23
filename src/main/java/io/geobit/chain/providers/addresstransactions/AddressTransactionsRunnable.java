@@ -25,6 +25,7 @@
 package io.geobit.chain.providers.addresstransactions;
 
 import io.geobit.common.entity.AddressTransactions;
+import io.geobit.common.providers.AddressTransactionsProvider;
 
 import java.util.concurrent.Callable;
 

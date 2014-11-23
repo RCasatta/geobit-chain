@@ -24,8 +24,11 @@
 
 package io.geobit.chain.providers.balance;
 
+import io.geobit.common.providers.BalanceProvider;
+
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.SettableFuture;
+
 import static io.geobit.common.statics.Log.*;
 public class BalanceFutureCallback implements FutureCallback<Long> {
 	private Long start;

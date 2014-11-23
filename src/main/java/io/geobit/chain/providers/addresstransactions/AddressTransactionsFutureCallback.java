@@ -25,9 +25,11 @@
 package io.geobit.chain.providers.addresstransactions;
 
 import io.geobit.common.entity.AddressTransactions;
+import io.geobit.common.providers.AddressTransactionsProvider;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.SettableFuture;
+
 import static io.geobit.common.statics.Log.*;
 public class AddressTransactionsFutureCallback implements FutureCallback<AddressTransactions> {
 	private Long start;

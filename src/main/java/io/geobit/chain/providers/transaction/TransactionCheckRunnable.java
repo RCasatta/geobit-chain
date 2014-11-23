@@ -25,6 +25,7 @@
 package io.geobit.chain.providers.transaction;
 
 import io.geobit.common.entity.Transaction;
+import io.geobit.common.providers.TransactionProvider;
 
 import java.util.concurrent.Future;
 

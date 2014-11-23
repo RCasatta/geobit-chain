@@ -25,6 +25,7 @@
 package io.geobit.chain.providers.block;
 
 import io.geobit.common.entity.Block;
+import io.geobit.common.providers.BlockProvider;
 
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -32,6 +33,7 @@ import java.util.concurrent.Future;
 import com.google.common.base.Objects;
 import com.google.common.cache.LoadingCache;
 import com.google.common.util.concurrent.ListenableFuture;
+
 import static io.geobit.common.statics.Log.*;
 public class BlockCheckRunnable implements Runnable {
 	private Integer height;

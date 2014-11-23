@@ -27,10 +27,10 @@ package io.geobit.chain.dispatchers;
 import static io.geobit.common.statics.Log.log;
 import io.geobit.chain.providers.addresstransactions.AddressTransactionsCheckRunnable;
 import io.geobit.chain.providers.addresstransactions.AddressTransactionsFutureCallback;
-import io.geobit.chain.providers.addresstransactions.AddressTransactionsProvider;
 import io.geobit.chain.providers.addresstransactions.AddressTransactionsProviders;
 import io.geobit.chain.providers.addresstransactions.AddressTransactionsRunnable;
 import io.geobit.common.entity.AddressTransactions;
+import io.geobit.common.providers.AddressTransactionsProvider;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;

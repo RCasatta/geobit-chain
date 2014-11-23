@@ -1,8 +1,8 @@
 package io.geobit.chain.clients;
 
-import io.geobit.chain.providers.balance.BalanceProvider;
-import io.geobit.chain.providers.block.BlockProvider;
 import io.geobit.common.entity.Block;
+import io.geobit.common.providers.BalanceProvider;
+import io.geobit.common.providers.BlockProvider;
 
 public class InsightBitpayHTTPClient implements BalanceProvider, BlockProvider {
 

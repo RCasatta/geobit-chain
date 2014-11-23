@@ -25,11 +25,13 @@
 package io.geobit.chain.providers.addresstransactions;
 
 import io.geobit.common.entity.AddressTransactions;
+import io.geobit.common.providers.AddressTransactionsProvider;
 
 import java.util.concurrent.Future;
 
 import com.google.common.base.Objects;
 import com.google.common.cache.LoadingCache;
+
 import static io.geobit.common.statics.Log.*;
 
 public class AddressTransactionsCheckRunnable implements Runnable {

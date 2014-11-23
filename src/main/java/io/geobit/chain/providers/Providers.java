@@ -25,6 +25,7 @@
 package io.geobit.chain.providers;
 
 import io.geobit.chain.util.Performance;
+import io.geobit.common.providers.Provider;
 
 import java.util.LinkedList;
 import java.util.Random;

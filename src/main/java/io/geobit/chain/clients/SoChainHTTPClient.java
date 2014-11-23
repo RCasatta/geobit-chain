@@ -31,12 +31,12 @@ import io.geobit.chain.entity.sochain.SoChainData;
 import io.geobit.chain.entity.sochain.SoChainResponse;
 import io.geobit.chain.entity.sochain.SoChainTransaction;
 import io.geobit.chain.entity.sochain.SoChainTxResponse;
-import io.geobit.chain.providers.addresstransactions.AddressTransactionsProvider;
-import io.geobit.chain.providers.balance.BalanceProvider;
-import io.geobit.chain.providers.transaction.TransactionProvider;
-import io.geobit.chain.providers.transhex.TransHexProvider;
 import io.geobit.common.entity.AddressTransactions;
 import io.geobit.common.entity.Transaction;
+import io.geobit.common.providers.AddressTransactionsProvider;
+import io.geobit.common.providers.BalanceProvider;
+import io.geobit.common.providers.TransHexProvider;
+import io.geobit.common.providers.TransactionProvider;
 import io.geobit.common.statics.StaticNumbers;
 
 import java.util.Collections;

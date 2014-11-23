@@ -33,6 +33,7 @@ import io.geobit.chain.clients.ChainHTTPClient;
 import io.geobit.chain.clients.HelloBlockHTTPClient;
 import io.geobit.chain.clients.SoChainHTTPClient;
 import io.geobit.chain.providers.Providers;
+import io.geobit.common.providers.BalanceProvider;
 
 public class BalanceProviders extends Providers<BalanceProvider> {
 

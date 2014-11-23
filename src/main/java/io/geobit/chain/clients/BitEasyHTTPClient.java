@@ -26,8 +26,8 @@ package io.geobit.chain.clients;
 
 import io.geobit.chain.entity.biteasy.BitEasyAddressData;
 import io.geobit.chain.entity.biteasy.BitEasyResponse;
-import io.geobit.chain.providers.balance.BalanceProvider;
-import io.geobit.chain.providers.received.ReceivedProvider;
+import io.geobit.common.providers.BalanceProvider;
+import io.geobit.common.providers.ReceivedProvider;
 import io.geobit.common.statics.ApiKeys;
 import io.geobit.common.statics.StaticNumbers;
 import io.geobit.common.statics.StaticStrings;

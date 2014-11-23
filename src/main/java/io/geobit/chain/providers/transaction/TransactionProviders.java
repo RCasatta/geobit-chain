@@ -29,6 +29,7 @@ import io.geobit.chain.clients.BlockrHTTPClient;
 import io.geobit.chain.clients.HelloBlockHTTPClient;
 import io.geobit.chain.clients.SoChainHTTPClient;
 import io.geobit.chain.providers.Providers;
+import io.geobit.common.providers.TransactionProvider;
 
 public class TransactionProviders extends Providers<TransactionProvider> {
 

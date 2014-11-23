@@ -24,11 +24,14 @@
 
 package io.geobit.chain.providers;
 
+import io.geobit.common.providers.Provider;
+
 import java.util.concurrent.Future;
 
 import com.google.common.base.Objects;
 import com.google.common.cache.LoadingCache;
 import com.google.common.util.concurrent.ListenableFuture;
+
 import static io.geobit.common.statics.Log.*;
 public class TripleCheckRunnableLoadingCache<K,V> implements Runnable {
 	private K chiave;

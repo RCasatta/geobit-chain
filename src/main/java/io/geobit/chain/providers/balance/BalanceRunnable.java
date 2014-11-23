@@ -24,6 +24,8 @@
 
 package io.geobit.chain.providers.balance;
 
+import io.geobit.common.providers.BalanceProvider;
+
 import java.util.concurrent.Callable;
 
 public class BalanceRunnable implements Callable<Long> {

@@ -25,6 +25,7 @@
 package io.geobit.chain.providers.block;
 
 import io.geobit.common.entity.Block;
+import io.geobit.common.providers.BlockProvider;
 
 import java.util.concurrent.Callable;
 

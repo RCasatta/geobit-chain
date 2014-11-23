@@ -24,8 +24,11 @@
 
 package io.geobit.chain.providers.transhex;
 
+import io.geobit.common.providers.TransHexProvider;
+
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.SettableFuture;
+
 import static io.geobit.common.statics.Log.*;
 public class TransHexFutureCallback implements FutureCallback<String> {
 	private Long start;
