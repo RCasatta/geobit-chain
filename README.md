@@ -19,10 +19,12 @@ java, mvn and git are required to build and run
 ```
 git clone https://github.com/RCasatta/geobit-chain
 cd geobit-chain
-mvn install
+mvn install -Dmaven.test.skip=true
 java -jar target/chain/WEB-INF/lib/jetty-runner-8.1.0.RC5.jar target/chain.war
 ```
 Open your browser at [localhost:8080](http://localhost:8080)
+
+PS Needing efforts to adjust testing classes and remove the skip test flag 
 
 ## Block Explorers
 * https://www.biteasy.com
