@@ -31,6 +31,7 @@ import io.geobit.chain.clients.BlockExplorerHTTPClient;
 import io.geobit.chain.clients.BlockrHTTPClient;
 import io.geobit.chain.clients.ChainHTTPClient;
 import io.geobit.chain.clients.HelloBlockHTTPClient;
+import io.geobit.chain.clients.InsightBitpayHTTPClient;
 import io.geobit.chain.clients.SoChainHTTPClient;
 import io.geobit.chain.providers.Providers;
 import io.geobit.common.providers.BalanceProvider;
@@ -57,6 +58,8 @@ public class BalanceProviders extends Providers<BalanceProvider> {
 		add(g);
 		BalanceProvider h=new SoChainHTTPClient();
 		add(h);
+		BalanceProvider i=new InsightBitpayHTTPClient();
+		add(i);
 
 
 	}
