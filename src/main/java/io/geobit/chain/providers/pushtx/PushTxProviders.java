@@ -28,6 +28,7 @@ import io.geobit.chain.clients.BlockChainHTTPClient;
 import io.geobit.chain.clients.BlockCypherHTTPClient;
 import io.geobit.chain.clients.BlockrHTTPClient;
 import io.geobit.chain.providers.Providers;
+import io.geobit.common.providers.PushTxProvider;
 
 public class PushTxProviders extends Providers<PushTxProvider> {
 

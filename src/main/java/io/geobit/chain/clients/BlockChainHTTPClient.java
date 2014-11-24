@@ -24,17 +24,18 @@
 
 package io.geobit.chain.clients;
 
+import static io.geobit.common.statics.Log.error;
 import static io.geobit.common.statics.Log.log;
 import io.geobit.chain.dispatchers.BlockAndTransactionDispatcher;
 import io.geobit.chain.entity.blockchain.BlockChainAddress;
 import io.geobit.chain.entity.blockchain.BlockChainTransaction;
-import io.geobit.chain.providers.pushtx.PushTxProvider;
 import io.geobit.common.entity.AddressTransactions;
 import io.geobit.common.entity.Block;
 import io.geobit.common.entity.Transaction;
 import io.geobit.common.providers.AddressTransactionsProvider;
 import io.geobit.common.providers.BalanceProvider;
 import io.geobit.common.providers.BlockProvider;
+import io.geobit.common.providers.PushTxProvider;
 import io.geobit.common.providers.ReceivedProvider;
 import io.geobit.common.providers.TransHexProvider;
 import io.geobit.common.providers.TransactionProvider;
@@ -57,8 +58,6 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
-
-import static io.geobit.common.statics.Log.*;
 public class BlockChainHTTPClient implements BalanceProvider, AddressTransactionsProvider, 
 PushTxProvider, TransactionProvider, ReceivedProvider, BlockProvider,
 TransHexProvider {

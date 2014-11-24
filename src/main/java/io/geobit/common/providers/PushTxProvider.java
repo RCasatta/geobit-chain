@@ -22,9 +22,9 @@
  * THE SOFTWARE.
  */
 
-package io.geobit.chain.providers.pushtx;
+package io.geobit.common.providers;
 
-import io.geobit.common.providers.Provider;
+
 
 public interface PushTxProvider  extends Provider {
 	public Boolean pushTx(String hex);
