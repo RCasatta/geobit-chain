@@ -22,13 +22,30 @@
  * THE SOFTWARE.
  */
 
-package io.geobit.chain.providers.addresstransactions;
+package io.geobit.chain.providers.addressunspents;
 
-import io.geobit.chain.providers.Provider;
-import io.geobit.common.entity.AddressTransactions;
+import io.geobit.chain.clients.BlockChainHTTPClient;
+import io.geobit.chain.clients.BlockrHTTPClient;
+import io.geobit.chain.clients.HelloBlockHTTPClient;
+import io.geobit.chain.providers.Providers;
+import io.geobit.common.providers.AddressUnspentsProvider;
+
+public class AddressUnspentsProviders extends Providers<AddressUnspentsProvider> {
+
+	public AddressUnspentsProviders() {
+		super();
+
+		AddressUnspentsProvider b=new BlockChainHTTPClient();
+		add(b);
+		AddressUnspentsProvider c=new BlockrHTTPClient();
+		add(c);
+		AddressUnspentsProvider d=new HelloBlockHTTPClient();
+		add(d);
+		
+
+	}
 
 
-public interface AddressTransactionsProvider extends Provider  {
-	public AddressTransactions getAddressTransactions(String address);
+
 
 }

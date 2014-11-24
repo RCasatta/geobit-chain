@@ -26,31 +26,38 @@ package io.geobit.chain.clients;
 
 import static io.geobit.common.statics.Log.error;
 import static io.geobit.common.statics.Log.log;
+import io.geobit.chain.dispatchers.BalanceAndReceivedDispatcher;
 import io.geobit.chain.dispatchers.BlockAndTransactionDispatcher;
 import io.geobit.chain.entity.blockr.BlockrBalance;
 import io.geobit.chain.entity.blockr.BlockrBalanceData;
 import io.geobit.chain.entity.blockr.TxInfo;
 import io.geobit.chain.entity.blockr.TxInfoData;
 import io.geobit.chain.entity.blockr.V;
+import io.geobit.common.entity.AddressTransactions;
 import io.geobit.common.entity.Block;
 import io.geobit.common.entity.Transaction;
 import io.geobit.common.entity.TransactionInOut;
+import io.geobit.common.providers.AddressUnspentsProvider;
 import io.geobit.common.providers.BalanceProvider;
 import io.geobit.common.providers.BlockProvider;
 import io.geobit.common.providers.PushTxProvider;
 import io.geobit.common.providers.ReceivedProvider;
 import io.geobit.common.providers.TransHexProvider;
 import io.geobit.common.providers.TransactionProvider;
+import io.geobit.common.statics.ApiKeys;
 import io.geobit.common.statics.StaticNumbers;
 import io.geobit.common.statics.StaticStrings;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 
+import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;
 
 import com.sun.jersey.api.client.Client;
@@ -58,7 +65,8 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
-public class BlockrHTTPClient implements BalanceProvider, ReceivedProvider, TransactionProvider, PushTxProvider, TransHexProvider, BlockProvider {
+public class BlockrHTTPClient implements BalanceProvider, ReceivedProvider, TransactionProvider, 
+PushTxProvider, TransHexProvider, BlockProvider, AddressUnspentsProvider {
 	private static final String prefix= "http://btc.blockr.io/api/v1";
 
 	private WebResource balance;
@@ -70,6 +78,7 @@ public class BlockrHTTPClient implements BalanceProvider, ReceivedProvider, Tran
 	private WebResource lastBlock;
 	private WebResource blockNumber;
 	private WebResource blockTxs;
+	private WebResource unspent;
 
 	public BlockrHTTPClient() {
 		super();
@@ -80,7 +89,8 @@ public class BlockrHTTPClient implements BalanceProvider, ReceivedProvider, Tran
 		clientNoTimeout= Client.create();
 		client.setConnectTimeout(StaticNumbers.CONNECT_TIMEOUT);
 		client.setReadTimeout(   StaticNumbers.READ_TIMEOUT);
-
+		
+		unspent     = client.resource(prefix + "/address/unspent/" );
 		balance     = client.resource(prefix + "/address/balance/" );
 		received    = client.resource(prefix + "/address/info/" );
 		transaction = client.resource(prefix + "/tx/info/" );
@@ -267,5 +277,45 @@ public class BlockrHTTPClient implements BalanceProvider, ReceivedProvider, Tran
 		}
 
 		return null;
+	}
+
+	@Override
+	public AddressTransactions getAddressUnspents(String address) {
+		AddressTransactions result=null;
+		try {
+			result=new AddressTransactions();
+			
+			String json = unspent
+					.path(address)
+					.accept(MediaType.APPLICATION_JSON)
+					.header("User-Agent", StaticStrings.USER_AGENT)
+					.get(String.class);
+			JSONObject obj = new JSONObject(json);
+			JSONArray arr  = obj.getJSONArray("data");
+			Set<Transaction> insieme=new HashSet<Transaction>();
+			for(int i=0;i< arr.length(); i++) {
+				JSONObject obj2= (JSONObject) arr.get( i);
+				String hash=obj2.getString("tx");
+
+				BlockAndTransactionDispatcher disp=BlockAndTransactionDispatcher.getInstance();
+				Transaction t=disp.getTransaction(hash);
+				insieme.add(t);
+				
+			}
+			List<Transaction> lista=new LinkedList<Transaction>(insieme);
+			BalanceAndReceivedDispatcher disp= BalanceAndReceivedDispatcher.getInstance();
+			Long l=disp.getBalance(address);
+			result.setBalance(l);
+			result.setAddress(address);
+			result.setOnlyUnspent(true);
+			Collections.sort(lista);
+			result.setTransactions(lista);
+				
+			return result;
+			
+		} catch(Exception e) {}
+
+
+		return result;
 	}
 }

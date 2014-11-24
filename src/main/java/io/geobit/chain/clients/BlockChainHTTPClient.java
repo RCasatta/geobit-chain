@@ -26,6 +26,7 @@ package io.geobit.chain.clients;
 
 import static io.geobit.common.statics.Log.error;
 import static io.geobit.common.statics.Log.log;
+import io.geobit.chain.dispatchers.BalanceAndReceivedDispatcher;
 import io.geobit.chain.dispatchers.BlockAndTransactionDispatcher;
 import io.geobit.chain.entity.blockchain.BlockChainAddress;
 import io.geobit.chain.entity.blockchain.BlockChainTransaction;
@@ -33,6 +34,7 @@ import io.geobit.common.entity.AddressTransactions;
 import io.geobit.common.entity.Block;
 import io.geobit.common.entity.Transaction;
 import io.geobit.common.providers.AddressTransactionsProvider;
+import io.geobit.common.providers.AddressUnspentsProvider;
 import io.geobit.common.providers.BalanceProvider;
 import io.geobit.common.providers.BlockProvider;
 import io.geobit.common.providers.PushTxProvider;
@@ -44,8 +46,10 @@ import io.geobit.common.statics.StaticNumbers;
 import io.geobit.common.statics.StaticStrings;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -60,7 +64,7 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 public class BlockChainHTTPClient implements BalanceProvider, AddressTransactionsProvider, 
 PushTxProvider, TransactionProvider, ReceivedProvider, BlockProvider,
-TransHexProvider {
+TransHexProvider, AddressUnspentsProvider {
 	//	private static final String dns="https://blockchain.info";
 	private static final String prefix= "http://blockchain.info";
 
@@ -70,6 +74,7 @@ TransHexProvider {
 	private WebResource pushTx;
 	private WebResource transaction;
 	private WebResource block;
+	private WebResource unspent;
 
 	public BlockChainHTTPClient() {
 		super();
@@ -86,6 +91,7 @@ TransHexProvider {
 		pushTx      = client.resource(prefix + "/pushtx" );
 		transaction = client.resource(prefix + "/rawtx/" );
 		block       = client.resource(prefix + "/block-height/");
+		unspent     = client.resource(prefix + "/unspent");
 		//transaction.path(path);
 	}
 
@@ -160,7 +166,7 @@ TransHexProvider {
 			MultivaluedMap<String, String> formData = new MultivaluedMapImpl();
 			formData.add("tx", hex);
 			ClientResponse response = pushTx
-					.queryParam("api_code", "90ab63e1-3d4a-4d20-a64b-560f845c14b0")
+					.queryParam("api_code", ApiKeys.BLOCKCHAIN)
 					.header("User-Agent", StaticStrings.USER_AGENT)
 					.type(MediaType.APPLICATION_FORM_URLENCODED_TYPE)
 					.post(ClientResponse.class, formData);
@@ -182,7 +188,7 @@ TransHexProvider {
 			BlockChainAddress add=this.addrTxs
 					.path(address)
 					.queryParam("format", "json")
-					.queryParam("api_code", "90ab63e1-3d4a-4d20-a64b-560f845c14b0")
+					.queryParam("api_code", ApiKeys.BLOCKCHAIN)
 					.accept(MediaType.APPLICATION_JSON)
 					.header("User-Agent", StaticStrings.USER_AGENT)
 					.get(BlockChainAddress.class);
@@ -214,7 +220,7 @@ TransHexProvider {
 			try {
 				String result = balance
 						.path(address)
-						.queryParam("api_code", "90ab63e1-3d4a-4d20-a64b-560f845c14b0")
+						.queryParam("api_code", ApiKeys.BLOCKCHAIN)
 						.accept(MediaType.TEXT_PLAIN)
 						.header("User-Agent", StaticStrings.USER_AGENT)
 						.get(String.class);
@@ -231,7 +237,7 @@ TransHexProvider {
 		public Long getReceived(String address) {
 			String result = received
 					.path(address)
-					.queryParam("api_code", "90ab63e1-3d4a-4d20-a64b-560f845c14b0")
+					.queryParam("api_code", ApiKeys.BLOCKCHAIN)
 					.accept(MediaType.TEXT_PLAIN)
 					.header("User-Agent", StaticStrings.USER_AGENT)
 					.get(String.class);
@@ -247,7 +253,7 @@ TransHexProvider {
 			String result=block
 					.path(height.toString())
 					.queryParam("format", "json")
-					.queryParam("api_code", "90ab63e1-3d4a-4d20-a64b-560f845c14b0")
+					.queryParam("api_code", ApiKeys.BLOCKCHAIN)
 					.accept(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN)
 					.header("User-Agent", StaticStrings.USER_AGENT)
 					.get(String.class);
@@ -277,7 +283,7 @@ TransHexProvider {
 				result = transaction
 						.path(txhash)
 						.queryParam("format", "hex")
-						.queryParam("api_code", "90ab63e1-3d4a-4d20-a64b-560f845c14b0")
+						.queryParam("api_code", ApiKeys.BLOCKCHAIN)
 						.accept(MediaType.TEXT_PLAIN)
 						.header("User-Agent", StaticStrings.USER_AGENT)
 						.get(String.class);
@@ -290,5 +296,50 @@ TransHexProvider {
 		@Override
 		public String toString() {
 			return getPrefix();
+		}
+
+		/**
+		 * http://blockchain.info/unspent?active=$address
+		 */
+
+		@Override
+		public AddressTransactions getAddressUnspents(String address) {
+			AddressTransactions result=null;
+			try {
+				result=new AddressTransactions();
+				
+				String json = unspent
+						.queryParam("active", address)
+						.queryParam("api_code", ApiKeys.BLOCKCHAIN)
+						.accept(MediaType.APPLICATION_JSON)
+						.header("User-Agent", StaticStrings.USER_AGENT)
+						.get(String.class);
+				JSONObject obj = new JSONObject(json);
+				JSONArray arr  = obj.getJSONArray("unspent_outputs");
+				Set<Transaction> insieme=new HashSet<Transaction>();
+				for(int i=0;i< arr.length(); i++) {
+					JSONObject obj2= (JSONObject) arr.get( i);
+					String hash=obj2.getString("tx_hash_big_endian");
+
+					BlockAndTransactionDispatcher disp=BlockAndTransactionDispatcher.getInstance();
+					Transaction t=disp.getTransaction(hash);
+					insieme.add(t);
+					
+				}
+				List<Transaction> lista=new LinkedList<Transaction>(insieme);
+				BalanceAndReceivedDispatcher disp= BalanceAndReceivedDispatcher.getInstance();
+				Long l=disp.getBalance(address);
+				result.setBalance(l);
+				result.setAddress(address);
+				result.setOnlyUnspent(true);
+				Collections.sort(lista);
+				result.setTransactions(lista);
+					
+				return result;
+				
+			} catch(Exception e) {}
+
+
+			return result;
 		}
 	}

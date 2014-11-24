@@ -40,6 +40,7 @@ import io.geobit.common.providers.ReceivedProvider;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -59,6 +60,7 @@ implements BalanceProvider, ReceivedProvider {
 	private BalanceProviders     balanceProviders     = new BalanceProviders();
 	private ReceivedProviders    receivedProviders    = new ReceivedProviders();
 	private LoadingCache<String, Long> cache;
+	private LoadingCache<String, Long> recentCache;
 
 	private static BalanceAndReceivedDispatcher me;
 
@@ -74,6 +76,23 @@ implements BalanceProvider, ReceivedProvider {
 	}
 
 	private void initializeCache() {
+		recentCache = CacheBuilder.newBuilder()
+				.maximumSize(10000) 
+				.expireAfterWrite(10, TimeUnit.SECONDS)
+				.build(
+						new CacheLoader<String, Long>() {
+							public Long load(String cacheAddress) {  /* never been called */
+								log("BalanceAndReceivedDispatchers cache LOADING key " + cacheAddress);
+								if( cacheAddress.startsWith("b/") )
+									return getBalance(cacheAddress.substring(2) );
+								else if( cacheAddress.startsWith("r/") )
+									return getReceived(cacheAddress.substring(2) );
+								else
+									throw new RuntimeException("BalanceAndReceivedDispatchers cache address invalid");			
+							}
+						}
+						);
+		
 		cache = CacheBuilder.newBuilder()
 				.maximumSize(1000000) /* keep in memory 1M balance and received */
 				.build(
@@ -97,12 +116,6 @@ implements BalanceProvider, ReceivedProvider {
 		return "mixed";
 	}
 	
-	public Long getBalanceCache(String address) {
-		Long ret=cache.getIfPresent("b/" + address);
-		if(ret==null)
-			ret=0L;
-		return ret;
-	}
 
 	@Override
 	public Long getBalance(String address) {
@@ -112,7 +125,10 @@ implements BalanceProvider, ReceivedProvider {
 	public Long getBalance(String address, int cont) {
 		if(cont>5)
 			return null;
-		Long valCache = cache.getIfPresent("b/"+address);
+		Long valCache = recentCache.getIfPresent("b/"+address);
+		if(valCache!=null)
+			return valCache;
+		valCache = cache.getIfPresent("b/"+address);
 		BalanceProvider bal1 = balanceProviders.take();
 		BalanceProvider bal2 = balanceProviders.takeDifferent(bal1);
 		log("bal1=" + bal1 + " bal2="+bal2);
@@ -128,13 +144,16 @@ implements BalanceProvider, ReceivedProvider {
 		moreExecutor.execute(checker);
 		try {
 			Long valRet = returned.get();
-			if(valCache!=null && valCache.equals( valRet ) )
+			if(valCache!=null && valCache.equals( valRet ) ) {
+				recentCache.put("b/" + address, valRet);
 				return valRet;
+			}
 			
 			Long first  = listenableFuture1.get();
 			Long second = listenableFuture2.get();
 			if(first!=null && first.equals( second ) ) {
 				cache.put("b/" + address, first);
+				recentCache.put("b/" + address, first);
 				return first;
 			}
 		} catch (Exception e) {		
@@ -151,7 +170,10 @@ implements BalanceProvider, ReceivedProvider {
 	public Long getReceived(String address, int cont) {
 		if(cont>5)
 			return null;
-		Long valCache = cache.getIfPresent("r/"+address);
+		Long valCache = recentCache.getIfPresent("r/"+address);
+		if(valCache!=null)
+			return valCache;
+		valCache = cache.getIfPresent("r/"+address);
 		ReceivedProvider rec1 = receivedProviders.take();
 		ReceivedProvider rec2 = receivedProviders.takeDifferent(rec1);
 		log("rec1=" + rec1 + " rec2="+rec2);
@@ -170,13 +192,16 @@ implements BalanceProvider, ReceivedProvider {
 		Long valRet;
 		try {
 			valRet = returned.get();  /* return the faster */
-			if(valCache!=null && valCache.equals( valRet ) )
+			if(valCache!=null && valCache.equals( valRet ) ) {
+				recentCache.put("r/" + address, valRet);
 				return valRet;
+			}
 			
 			Long first  = listenableFuture1.get();
 			Long second = listenableFuture2.get();
 			if(first!=null && first.equals( second ) ) {
 				cache.put("r/" + address, first);
+				recentCache.put("r/" + address, first);
 				return first;
 			}
 			if(first != null)	    cache.put("r/" + address, first);
@@ -188,12 +213,7 @@ implements BalanceProvider, ReceivedProvider {
 		return getBalance(address,cont+1);
 	}
 
-	public Long getReceivedCache(String address) {
-		Long ret=cache.getIfPresent("r/" + address);
-		if(ret==null)
-			ret=0L;
-		return ret;
-	}
+
 
 	public BalanceProviders getBalanceProviders() {
 		return balanceProviders;

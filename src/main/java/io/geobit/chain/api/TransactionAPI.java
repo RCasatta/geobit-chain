@@ -27,7 +27,6 @@ package io.geobit.chain.api;
 import io.geobit.chain.clients.SoChainHTTPClient;
 import io.geobit.chain.dispatchers.BlockAndTransactionDispatcher;
 import io.geobit.common.entity.Transaction;
-import io.geobit.common.providers.TransactionProvider;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

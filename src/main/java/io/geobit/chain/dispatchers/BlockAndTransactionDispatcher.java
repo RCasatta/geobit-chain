@@ -30,6 +30,7 @@ import io.geobit.chain.providers.block.BlockFutureCallback;
 import io.geobit.chain.providers.block.BlockProviders;
 import io.geobit.chain.providers.block.BlockRunnable;
 import io.geobit.chain.providers.block.BlocksCache;
+import io.geobit.chain.providers.transaction.TransactionsCache;
 import io.geobit.chain.providers.transaction.TransactionCheckRunnable;
 import io.geobit.chain.providers.transaction.TransactionFutureCallback;
 import io.geobit.chain.providers.transaction.TransactionProviders;
@@ -65,7 +66,8 @@ public class BlockAndTransactionDispatcher implements BlockProvider, Transaction
 
 	private BlocksCache blocksCache = new BlocksCache();
 	
-	private LoadingCache<String,Transaction>  txCache;
+	private TransactionsCache txCache;
+	
 	private LoadingCache<String,String> transHexCache;
 
 	private BlockProviders             blockProviders = new BlockProviders();
@@ -82,16 +84,7 @@ public class BlockAndTransactionDispatcher implements BlockProvider, Transaction
 	private BlockAndTransactionDispatcher() {
 		super();
 
-		txCache = CacheBuilder.newBuilder()
-				.maximumSize(100000) 
-				.build(
-						new CacheLoader<String, Transaction>() {
-							public Transaction load(String txHash) {  /* never been called */
-								log("txCache  " + txHash);
-								throw new RuntimeException("txCache");			
-							}
-						}
-						);
+		txCache= new TransactionsCache();
 
 		transHexCache = CacheBuilder.newBuilder()
 				.maximumSize(100000) 
@@ -218,7 +211,7 @@ public class BlockAndTransactionDispatcher implements BlockProvider, Transaction
 	private Transaction getTransaction(String txHash, int cont) {
 		if(cont>5)
 			return null;    
-		Transaction valCache = txCache.getIfPresent(txHash);
+		Transaction valCache = txCache.get(txHash);
 		if(valCache!=null)
 			return valCache;  /* the block in confirmed cache is returned */
 		
@@ -276,7 +269,7 @@ public class BlockAndTransactionDispatcher implements BlockProvider, Transaction
 		return blocksCache;
 	}
 
-	public LoadingCache<String, Transaction> getTxCache() {
+	public TransactionsCache getTxCache() {
 		return txCache;
 	}
 

@@ -22,33 +22,33 @@
  * THE SOFTWARE.
  */
 
-package io.geobit.chain.providers.addresstransactions;
+package io.geobit.chain.providers.addressunspents;
 
+import static io.geobit.common.statics.Log.error;
+import static io.geobit.common.statics.Log.log;
 import io.geobit.common.entity.AddressTransactions;
-import io.geobit.common.providers.AddressTransactionsProvider;
+import io.geobit.common.providers.AddressUnspentsProvider;
 
 import java.util.concurrent.Future;
 
 import com.google.common.base.Objects;
 import com.google.common.cache.LoadingCache;
 
-import static io.geobit.common.statics.Log.*;
-
-public class AddressTransactionsCheckRunnable implements Runnable {
+public class AddressUnspentsCheckRunnable implements Runnable {
 	private String address;
 	private Future<AddressTransactions> firstFuture;
-	private AddressTransactionsProvider firstProvider;
+	private AddressUnspentsProvider firstProvider;
 	private Future<AddressTransactions> secondFuture;
-	private AddressTransactionsProvider secondProvider;
-	private AddressTransactionsProviders providers;
+	private AddressUnspentsProvider secondProvider;
+	private AddressUnspentsProviders providers;
 	private LoadingCache<String, AddressTransactions> addressTransactionsCache;
 
 
 
-	public AddressTransactionsCheckRunnable(String address, Future<AddressTransactions> firstFuture,
-			AddressTransactionsProvider firstProvider, Future<AddressTransactions> secondFuture,
-			AddressTransactionsProvider secondProvider, 
-			AddressTransactionsProviders providers, LoadingCache<String, AddressTransactions> addressTransactionsCache) {
+	public AddressUnspentsCheckRunnable(String address, Future<AddressTransactions> firstFuture,
+			AddressUnspentsProvider firstProvider, Future<AddressTransactions> secondFuture,
+			AddressUnspentsProvider secondProvider, 
+			AddressUnspentsProviders providers, LoadingCache<String, AddressTransactions> addressTransactionsCache) {
 		super();
 		this.address        = address;
 		this.firstFuture    = firstFuture;
@@ -61,7 +61,7 @@ public class AddressTransactionsCheckRunnable implements Runnable {
 
 	@Override
 	public void run() {
-		AddressTransactionsProvider thirdProvider=null;
+		
 		try {
 			log("started check received");
 			AddressTransactions firstResult  = firstFuture.get();
@@ -73,22 +73,17 @@ public class AddressTransactionsCheckRunnable implements Runnable {
 					secondResult, secondProvider );
 			log(format);
 			if(!Objects.equal( firstResult , secondResult))  {
-				
-				/* HANDLING DIFFERENCE */
-				AddressTransactionsProvider current=null;
-				do { /* need to take a provider different from the first and the second */
-					current=providers.takeDifferent(firstProvider);
-				} while( secondProvider==current );
-				thirdProvider=current;
+
+				AddressUnspentsProvider thirdProvider=providers.takeDifferent(firstProvider,secondProvider);
 				String aCapo="\n%s\n";
-				AddressTransactions thirdResult=thirdProvider.getAddressTransactions(address);
+				AddressTransactions thirdResult=thirdProvider.getAddressUnspents(address);
 				if( Objects.equal( firstResult , thirdResult) ) {
 					error(secondProvider + " gave bad result " +  String.format(aCapo, secondResult) +". correct addTxs(" + address + ") is " + "\n" + String.format(aCapo,firstResult) + " from " + firstProvider  + " and " + thirdProvider  );
-					addressTransactionsCache.put("a/" + address, firstResult);
+					addressTransactionsCache.put("u/" + address, firstResult);
 					providers.record(secondProvider, null);
 				} else if (Objects.equal( secondResult , thirdResult)) {
 					error(firstProvider  + " gave bad result " + "\n" + String.format(aCapo,firstResult) +". correct addTxs(" + address + ") is " + "\n" + String.format(aCapo,secondResult) + " from " + secondProvider + " and " + thirdProvider  );
-					addressTransactionsCache.put("a/" + address, secondResult);
+					addressTransactionsCache.put("u/" + address, secondResult);
 					providers.record(firstProvider, null);
 				} else {
 					error("THREE DIFFERENT RESULT!!!! for " + address + " are " + "\n" + String.format(aCapo,firstResult) + " " + "\n" + String.format(aCapo,secondResult) + " " + "\n" + String.format(aCapo,thirdResult));

@@ -33,10 +33,11 @@ import com.google.common.base.Joiner;
 
 @XmlRootElement
 public class AddressTransactions implements Serializable  {
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 2L;
 	private String address;
 	private Long   balance;
 	private List<Transaction> transactions;
+	private boolean onlyUnspent=false;
 	
 	public String getAddress() {
 		return address;
@@ -62,10 +63,18 @@ public class AddressTransactions implements Serializable  {
 		this.transactions = transactions;
 	}
 
+	public boolean isOnlyUnspent() {
+		return onlyUnspent;
+	}
+
+	public void setOnlyUnspent(boolean onlyUnspent) {
+		this.onlyUnspent = onlyUnspent;
+	}
+
 	@Override
 	public String toString() {
 		return "AddressTransactions [address=" + address + ", balance="
-				+ balance + ", transactions=" + Joiner.on("\n").join(transactions) + "]";
+				+ balance + ", transactions=" + (transactions!=null ? Joiner.on("\n").join(transactions) : "") + "]";
 	}
 
 	@Override

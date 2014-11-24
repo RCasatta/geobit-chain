@@ -29,8 +29,13 @@ import io.geobit.chain.providers.addresstransactions.AddressTransactionsCheckRun
 import io.geobit.chain.providers.addresstransactions.AddressTransactionsFutureCallback;
 import io.geobit.chain.providers.addresstransactions.AddressTransactionsProviders;
 import io.geobit.chain.providers.addresstransactions.AddressTransactionsRunnable;
+import io.geobit.chain.providers.addressunspents.AddressUnspentsCheckRunnable;
+import io.geobit.chain.providers.addressunspents.AddressUnspentsFutureCallback;
+import io.geobit.chain.providers.addressunspents.AddressUnspentsProviders;
+import io.geobit.chain.providers.addressunspents.AddressUnspentsRunnable;
 import io.geobit.common.entity.AddressTransactions;
 import io.geobit.common.providers.AddressTransactionsProvider;
+import io.geobit.common.providers.AddressUnspentsProvider;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -45,12 +50,13 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 
-public class AddressTransactionsDispatcher implements AddressTransactionsProvider {
+public class AddressTransactionsDispatcher implements AddressTransactionsProvider, AddressUnspentsProvider {
 
 	private ExecutorService              executor         = Executors.newFixedThreadPool(10);
 	private ListeningExecutorService moreExecutor         = MoreExecutors.listeningDecorator(executor);
 
 	private AddressTransactionsProviders  addTxsProviders = new AddressTransactionsProviders();
+	private AddressUnspentsProviders      addUnsProviders = new AddressUnspentsProviders();
 	private LoadingCache<String, AddressTransactions> cache;
 
 	private static AddressTransactionsDispatcher me;
@@ -69,7 +75,7 @@ public class AddressTransactionsDispatcher implements AddressTransactionsProvide
 				.build(
 						new CacheLoader<String, AddressTransactions>() {
 							public AddressTransactions load(String cacheAddress) {  /* never been called */
-								log("BalanceAndReceivedDispatchers cache LOADING key " + cacheAddress);
+								log("AddressTransactionsDispatcher cache LOADING key " + cacheAddress);
 								throw new RuntimeException("BalanceAndReceivedDispatchers cache address invalid");			
 							}
 						}
@@ -89,7 +95,7 @@ public class AddressTransactionsDispatcher implements AddressTransactionsProvide
 	private AddressTransactions getAddressTransactions(String address, int cont) {
 		if(cont>5)
 			return null;
-		AddressTransactions valCache = cache.getIfPresent(address);
+		AddressTransactions valCache = cache.getIfPresent("a/" + address);
 		AddressTransactionsProvider atp1 = addTxsProviders.take();
 		AddressTransactionsProvider atp2 = addTxsProviders.takeDifferent(atp1);
 		log("atp1=" + atp1 + " atp2="+atp2);
@@ -111,7 +117,7 @@ public class AddressTransactionsDispatcher implements AddressTransactionsProvide
 			AddressTransactions first  = listenableFuture1.get();
 			AddressTransactions second = listenableFuture2.get();
 			if(first!=null && first.equals( second ) ) {
-				cache.put(address, first);
+				cache.put("a/" +address, first);
 				return first;
 			}
 		} catch (Exception e) {		
@@ -125,6 +131,44 @@ public class AddressTransactionsDispatcher implements AddressTransactionsProvide
 
 	public LoadingCache<String, AddressTransactions> getCache() {
 		return cache;
+	}
+
+	@Override
+	public AddressTransactions getAddressUnspents(String address) {
+		return getAddressUnspents(address,0);
+	}
+	
+	public AddressTransactions getAddressUnspents(String address, int cont) {
+		if(cont>5)
+			return null;
+		AddressTransactions valCache = cache.getIfPresent("u/" + address);
+		AddressUnspentsProvider aup1 = addUnsProviders.take();
+		AddressUnspentsProvider aup2 = addUnsProviders.takeDifferent(aup1);
+		log("aup1=" + aup1 + " aup2="+aup2);
+		Callable<AddressTransactions> runner1   = new AddressUnspentsRunnable(aup1, address);
+		Callable<AddressTransactions> runner2   = new AddressUnspentsRunnable(aup2, address);
+		final Long start=System.currentTimeMillis(); 
+		ListenableFuture<AddressTransactions> listenableFuture1 = moreExecutor.submit(runner1);
+		ListenableFuture<AddressTransactions> listenableFuture2 = moreExecutor.submit(runner2);
+		SettableFuture<AddressTransactions> returned = SettableFuture.create();
+		Futures.addCallback(listenableFuture1,new AddressUnspentsFutureCallback(start,  aup1, returned, addUnsProviders ));
+		Futures.addCallback(listenableFuture2,new AddressUnspentsFutureCallback(start,  aup2, returned, addUnsProviders ));
+		Runnable checker = new AddressUnspentsCheckRunnable(address,listenableFuture1, aup1, listenableFuture2, aup2, addUnsProviders, cache); 
+		moreExecutor.execute(checker);
+		try {
+			AddressTransactions valRet = returned.get();
+			if(valCache!=null && valCache.equals( valRet ) )
+				return valRet;
+			
+			AddressTransactions first  = listenableFuture1.get();
+			AddressTransactions second = listenableFuture2.get();
+			if(first!=null && first.equals( second ) ) {
+				cache.put("u/" + address, first);
+				return first;
+			}
+		} catch (Exception e) {		
+		}
+		return getAddressUnspents(address,cont+1);	
 	}
 
 

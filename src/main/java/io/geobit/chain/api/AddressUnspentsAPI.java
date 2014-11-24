@@ -22,8 +22,29 @@
  * THE SOFTWARE.
  */
 
-package io.geobit.chain.providers;
+package io.geobit.chain.api;
 
-public interface Provider {
-	public String getPrefix();
+import io.geobit.chain.dispatchers.AddressTransactionsDispatcher;
+import io.geobit.common.entity.AddressTransactions;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+@Path("/btc/v1/address-unspents")
+public class AddressUnspentsAPI {
+
+	
+	@GET
+	@Path("/{address}")
+	@Produces({MediaType.APPLICATION_JSON}) 
+	public Response addressUnspents(@PathParam("address") String address) {
+		AddressTransactionsDispatcher disp = AddressTransactionsDispatcher.getInstance();
+		AddressTransactions addTxs=disp.getAddressUnspents(address);
+		return Response.ok(addTxs).build();
+	}
+	
 }

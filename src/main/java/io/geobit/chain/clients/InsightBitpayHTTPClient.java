@@ -20,6 +20,7 @@ public class InsightBitpayHTTPClient implements BalanceProvider,BlockProvider {
 	
 	private WebResource addr;
 	private WebResource block;
+	private WebResource blockIndex;
 	
 	/**
 	https://github.com/bitpay/insight-api#api
@@ -32,8 +33,9 @@ public class InsightBitpayHTTPClient implements BalanceProvider,BlockProvider {
 		client.setConnectTimeout(StaticNumbers.CONNECT_TIMEOUT);
 		client.setReadTimeout(   StaticNumbers.READ_TIMEOUT);
 
-		addr     = client.resource(prefix + "/addr/" );
-		block     = client.resource(prefix + "/block/" );
+		addr       = client.resource(prefix + "/addr/" );
+		blockIndex = client.resource(prefix + "/block-index/" );
+		block      = client.resource(prefix + "/block/" );
 	}
 	
 	@Override
@@ -47,13 +49,22 @@ public class InsightBitpayHTTPClient implements BalanceProvider,BlockProvider {
 	@Override
 	public Block getBlock(Integer height) {
 		try {
-			String rawBlock=block
+			String rawBlockIndex=blockIndex
 					.path(height.toString())
 					.accept(MediaType.APPLICATION_JSON)
 					.header("User-Agent", StaticStrings.USER_AGENT)
 					.get(String.class);
-			JSONObject obj      = new JSONObject(rawBlock);
-			JSONObject jsonData = obj.getJSONObject("data");
+//			System.out.println(rawBlockIndex);
+			JSONObject objHash      = new JSONObject(rawBlockIndex);
+			
+			String rawBlock=block
+					.path(objHash.getString("blockHash"))
+					.accept(MediaType.APPLICATION_JSON)
+					.header("User-Agent", StaticStrings.USER_AGENT)
+					.get(String.class);
+//			System.out.println(rawBlock);
+			JSONObject jsonData      = new JSONObject(rawBlock);
+			
 			String hash     = jsonData.getString("hash");
 			int heightRet       = jsonData.getInt("height");
 			Long timestamp = jsonData.getLong("time");

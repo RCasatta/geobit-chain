@@ -35,7 +35,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -49,10 +48,9 @@ public class ReceivedAPI {
 	@GET
 	@Path("/{address}")
 	@Produces({MediaType.TEXT_PLAIN}) 
-	public Response received(@PathParam("address") String address, @QueryParam("cache") String cache) {
+	public Response received(@PathParam("address") String address) {
 		String returned="";
 		BalanceAndReceivedDispatcher disp = BalanceAndReceivedDispatcher.getInstance();
-		boolean useCache = (cache!=null);
 		
 		if(address.contains(",")) {
 			String addresses[]=address.split(",");
@@ -61,9 +59,7 @@ public class ReceivedAPI {
 				if(!Validator.isValidAddress(current))
 					return Response.status(Status.BAD_REQUEST).build();
 				
-				Long ret= useCache ? 
-						disp.getReceivedCache(current) : 
-						disp.getReceived(current);
+				Long ret= disp.getReceived(current);
 				
 				results.add(ret.toString());
 				
@@ -73,9 +69,7 @@ public class ReceivedAPI {
 			if(!Validator.isValidAddress(address))
 				return Response.status(Status.BAD_REQUEST).build();
 			
-			Long ret= useCache ? 
-					disp.getReceivedCache(address) : 
-					disp.getReceived(address);	
+			Long ret= disp.getReceived(address);	
 					
 			returned = ret.toString();
 		}

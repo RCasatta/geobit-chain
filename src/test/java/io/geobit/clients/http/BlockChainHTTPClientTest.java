@@ -28,7 +28,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import io.geobit.chain.clients.BlockChainHTTPClient;
+import io.geobit.common.entity.AddressTransactions;
 import io.geobit.common.entity.Transaction;
+import io.geobit.common.providers.AddressUnspentsProvider;
 import io.geobit.common.providers.BalanceProvider;
 import io.geobit.common.providers.ReceivedProvider;
 import io.geobit.common.providers.TransHexProvider;
@@ -38,22 +40,23 @@ import io.geobit.common.statics.SimpleDateFormats;
 import java.text.ParseException;
 import java.util.Date;
 
-import org.junit.Before;
 import org.junit.Test;
 
 public class BlockChainHTTPClientTest {
+	String address = "1DiWBDy3eejMtUUPAvVLqWmPVsecbqbrSU";
 	
 	@Test 
 	public void blockchainTest() {
 		BalanceProvider balanceProv=new BlockChainHTTPClient();
 		
-		Long result=balanceProv.getBalance("1DiWBDy3eejMtUUPAvVLqWmPVsecbqbrSU");
+
+		Long result=balanceProv.getBalance(address);
 		assertNotNull(result);
 		assertTrue(result>0);
 		
 		ReceivedProvider receivedProv = new BlockChainHTTPClient();
 		
-		Long result2=receivedProv.getReceived("1DiWBDy3eejMtUUPAvVLqWmPVsecbqbrSU");
+		Long result2=receivedProv.getReceived(address);
 		assertNotNull(result2);
 		assertTrue(result2>0);
 		System.out.println("received=" + result2);
@@ -97,6 +100,15 @@ public class BlockChainHTTPClientTest {
 				"01000000017d9d5ee684871124984352a619a2ba7e47dcbe938fe03d309954c5c37dead35b000000006b483045022100ef2ff0eaa8592ba063b23cb5ed4426ec8da75e084eb5d0c639e7ab557244b6c0022062faf9cad264d5d940f5f41b764da8150b20e3ea38f04154cd3aee7674dce600012103e932232ef41a3d2ef858ec3d6eb4ea13b28a096fa5e9a85761f7f578deea1e0effffffff0230d12501000000001976a9146f4c339296f9cb2d45419564f45121ccd84d505188acb8560000000000001976a914a781df4fda5411ecf867101cb18212403d07b6eb88ac00000000"
 				,hex);
 		
+	}
+	
+	@Test 
+	public void blockchainUnspentTest() {
+
+		AddressUnspentsProvider uns=new BlockChainHTTPClient();
+		AddressTransactions tr= uns.getAddressUnspents("1G8sGKyw4wFGQXBZxk4df6uvCxGb1jR5sJ");
+		System.out.println(tr);
+		assertNotNull(tr);
 	}
 	
 

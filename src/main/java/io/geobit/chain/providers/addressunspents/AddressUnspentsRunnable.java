@@ -22,34 +22,31 @@
  * THE SOFTWARE.
  */
 
-package io.geobit.chain.api;
+package io.geobit.chain.providers.addressunspents;
 
-import io.geobit.chain.dispatchers.BlockAndTransactionDispatcher;
-import io.geobit.common.entity.Block;
+import io.geobit.common.entity.AddressTransactions;
+import io.geobit.common.providers.AddressTransactionsProvider;
+import io.geobit.common.providers.AddressUnspentsProvider;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import java.util.concurrent.Callable;
 
-@Path("/btc/v1/block")
-public class BlockAPI {
+public class AddressUnspentsRunnable implements Callable<AddressTransactions> {
+	private AddressUnspentsProvider provider;
+	private String address;
+	
+	
 
-	@GET
-	@Path("/{height}")
-	@Produces({MediaType.APPLICATION_JSON}) 
-	public Response addressTransactions(@PathParam("height") String sHeight) {
-		BlockAndTransactionDispatcher disp=BlockAndTransactionDispatcher.getInstance();
-		Integer height;
-		try {
-			height=Integer.parseInt(sHeight);
-		} catch (Exception e) {
-			return Response.status(400).build();
-		}
-		Block b=disp.getBlock(height);
-		
-		return Response.ok(b).build();
+	public AddressUnspentsRunnable(AddressUnspentsProvider provider, String address) {
+		super();
+		this.provider = provider;
+		this.address  = address;
 	}
+
+
+	@Override
+	public AddressTransactions call() throws Exception {
+		AddressTransactions l = provider.getAddressUnspents(address);
+		return l;
+	}
+
 }

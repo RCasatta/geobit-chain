@@ -80,6 +80,15 @@ public class Transaction implements Comparable<Transaction> {
 	public void setOut(List<TransactionInOut> out) {
 		this.out = out;
 	}
+	
+	public boolean areAllSpent() {
+		boolean returned=true;
+		for(TransactionInOut cur : getOut()) {
+			if(cur.isSpent()==false)
+				return false;
+		}
+		return returned;
+	}
 
 	@Override
 	public String toString() {

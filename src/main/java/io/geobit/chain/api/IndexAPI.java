@@ -53,19 +53,19 @@ public class IndexAPI {
 		String txHash         = "ec0b571d8eafa5ccbb81a509e563b8142d045aece050909154b638758cc5d425";
 		
 		String balanceLinks = String.format(link, "balance/" +myAddress               , "balance") + ", " +
-				String.format(link, "balance/" +myAddress + ","  +anotherAddress      , "multi balance") + ", " +
-				String.format(link, "balance/" +myAddress + "?cache=true"             , "balance cache")
+				String.format(link, "balance/" +myAddress + ","  +anotherAddress      , "multi balance") 
+		
 				;
 		
 		String receivedLinks = String.format(link, "received/" +myAddress               , "received") + ", " +
-				String.format(link, "received/" +myAddress + ","  +anotherAddress      , "multi received") + ", " +
-				String.format(link, "received/" +myAddress + "?cache=true"             , "received cache")
+				String.format(link, "received/" +myAddress + ","  +anotherAddress      , "multi received")
 				;
 		
 		String apiMethods = "<ul>" + 
 				"<li>" + balanceLinks  + "</li>"    + 
 				"<li>" + receivedLinks + "</li>"    +
 				String.format(linkli, "address-transactions/" + myAddress , "address-transactions") +
+				String.format(linkli, "address-unspents/" + "1G8sGKyw4wFGQXBZxk4df6uvCxGb1jR5sJ"     , "address-unspents") +
 				String.format(linkli, "block/300000"                      , "block")   +
 				String.format(linkli, "cache-invalidate/" + myAddress     , "cache-invalidate")   +
 				String.format(linkli, "transaction/" + txHash             , "transaction")     +

@@ -24,15 +24,14 @@
 
 package io.geobit.chain.providers.transaction;
 
+import static io.geobit.common.statics.Log.error;
+import static io.geobit.common.statics.Log.log;
 import io.geobit.common.entity.Transaction;
 import io.geobit.common.providers.TransactionProvider;
 
 import java.util.concurrent.Future;
 
 import com.google.common.base.Objects;
-import com.google.common.cache.LoadingCache;
-
-import static io.geobit.common.statics.Log.*;
 
 public class TransactionCheckRunnable implements Runnable {
 	private String txHash;
@@ -43,13 +42,13 @@ public class TransactionCheckRunnable implements Runnable {
 	private Future<Transaction>  thirdFuture;
 	private TransactionProvider  thirdProvider;
 	private TransactionProviders providers;
-	private LoadingCache<String,Transaction> cache;
+	private TransactionsCache cache;
 
 	public TransactionCheckRunnable(String txHash, Future<Transaction> firstFuture,
 			TransactionProvider firstProvider, Future<Transaction> secondFuture,
 			TransactionProvider secondProvider, 
 			Future<Transaction> thirdFuture, TransactionProvider thirdProvider, 
-			TransactionProviders providers, LoadingCache<String,Transaction> cache) {
+			TransactionProviders providers, TransactionsCache cache) {
 		super();
 		this.txHash         = txHash;
 		this.firstFuture    = firstFuture;

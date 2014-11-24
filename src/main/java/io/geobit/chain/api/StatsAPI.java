@@ -58,7 +58,7 @@ public class StatsAPI {
 		
 		String cache1 =   "Balance and Received cache size=" +disp.getCache().size() + "\n";
 		String cache2 =  disp2.getBlocksCache().toString() + "\n";
-		String cache3 = "Transaction cache size=" +disp2.getTxCache().size() + "\n";
+		String cache3 =  disp2.getTxCache().toString() + "\n";
 		String cache4 = "Trans Hex cache size=" +disp2.getTransHexCache().size() + "\n";
 		String cache5 = "AddressTransactionsProviders cache size=" +disp3.getCache().size() + "\n";
 		
