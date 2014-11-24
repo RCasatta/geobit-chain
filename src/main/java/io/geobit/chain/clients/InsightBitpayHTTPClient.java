@@ -1,18 +1,17 @@
 package io.geobit.chain.clients;
 
 import static io.geobit.common.statics.Log.error;
-import io.geobit.common.entity.Block;
-import io.geobit.common.providers.BalanceProvider;
-import io.geobit.common.providers.BlockProvider;
-import io.geobit.common.statics.StaticNumbers;
-import io.geobit.common.statics.StaticStrings;
-
-import javax.ws.rs.core.MediaType;
-
 import org.codehaus.jettison.json.JSONObject;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
+
+import io.geobit.chain.providers.balance.BalanceProvider;
+import io.geobit.chain.providers.block.BlockProvider;
+import io.geobit.common.entity.Block;
+import io.geobit.common.statics.StaticNumbers;
+import io.geobit.common.statics.StaticStrings;
+import javax.ws.rs.core.MediaType;
 
 
 public class InsightBitpayHTTPClient implements BalanceProvider,BlockProvider {

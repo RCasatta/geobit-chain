@@ -27,8 +27,9 @@ package io.geobit.chain.providers.block;
 import io.geobit.chain.clients.BlockChainHTTPClient;
 import io.geobit.chain.clients.BlockrHTTPClient;
 import io.geobit.chain.clients.HelloBlockHTTPClient;
-import io.geobit.chain.providers.Providers;
 import io.geobit.common.providers.BlockProvider;
+import io.geobit.chain.clients.InsightBitpayHTTPClient;
+import io.geobit.chain.providers.Providers;
 
 public class BlockProviders extends Providers<BlockProvider> {
 
@@ -41,6 +42,8 @@ public class BlockProviders extends Providers<BlockProvider> {
 		add(b);
 		BlockProvider c=new BlockrHTTPClient();
 		add(c);
+		BlockProvider d=new InsightBitpayHTTPClient();
+		add(d);
 	
 	}
 
