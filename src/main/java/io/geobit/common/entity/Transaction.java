@@ -81,6 +81,14 @@ public class Transaction implements Comparable<Transaction> {
 		this.out = out;
 	}
 	
+	public String getFrom() {
+		return getIn().get(0).getAddress();
+	}
+	
+	public String getTo() {
+		return getOut().get(0).getAddress();
+	}
+	
 	public boolean areAllSpent() {
 		boolean returned=true;
 		for(TransactionInOut cur : getOut()) {
